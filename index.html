@@ -161,6 +161,28 @@ label.chk input{width:22px;min-height:22px;accent-color:var(--red)}
 button:active{filter:brightness(.9)}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s,filter .15s}}
 .pw{position:relative;display:block}.pw input{width:100%;padding-right:52px}.pw .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:0;color:var(--mut,#9aa6b8);cursor:pointer;border-radius:10px}.pw .eye:hover{color:#fff}
+/* responsive polish */
+.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:760px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:640px){.kpi{padding:10px;gap:8px}.kpi .ico{width:38px;height:38px}.kpi b{font-size:20px}.kpi span{font-size:12px}}
+label.chk{flex:0 1 auto;max-width:100%;overflow-wrap:anywhere}
+.tr{min-width:0;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:420px){.chip{font-size:12px;padding:5px 10px}.top h1{font-size:21px}}
+/* responsive polish 2 */
+.tl{flex-wrap:wrap;gap:2px 14px}
+@media(max-width:640px){
+table.t.docs{min-width:0}
+.t.docs thead{display:none}
+.t.docs,.t.docs tbody{display:block}
+.t.docs tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 4px;border-bottom:1px solid var(--line);align-items:center}
+.t.docs td{display:block;padding:0;border:0}
+.t.docs td:nth-child(1){font-weight:700}
+.t.docs td:nth-child(2){text-align:right}
+.t.docs td:nth-child(3){grid-column:1}
+.t.docs td:nth-child(4){grid-column:1;color:var(--mut);font-size:13px}
+.t.docs td:nth-child(5){grid-column:2;grid-row:2;text-align:right;font-weight:700}
+.t.docs td:nth-child(6){grid-column:2;grid-row:3;text-align:right}
+.t.docs td[colspan]{grid-column:1/-1}}
 </style>
 <div id="app"><p class="mut" style="padding:24px">กำลังโหลด…</p></div>
 <script>
@@ -215,7 +237,7 @@ async function init(){
 }
 function wm(){const n=shop().name.trim().split(/\s+/);return `<div class="wm"><b>${esc(n[0]||'')}</b>${esc(n.slice(1).join(' '))}</div>`}
 const navs=()=>{const o=role=='owner';return[['home','หน้าหลัก','home'],['orders','งาน','orders'],['docs','เอกสาร','docs']].concat(o?[['ledger','รายรับ-รายจ่าย','ledger']]:[]).concat([['customers','ลูกค้า','users'],['credit','เครดิต','coins'],['calc','คิดราคา','calc']]).concat(o?[['set','ตั้งค่า','set']]:[])};
-const TITLES={home:'หน้าหลัก',orders:'งานทั้งหมด',docs:'เอกสาร ใบเสนอราคา ใบแจ้งหนี้',ledger:'รายรับ-รายจ่าย',customers:'ลูกค้า',credit:'เครดิต วางบิลสิ้นเดือน',calc:'คิดราคา',set:'ตั้งค่า',more:'เมนูอื่นๆ'};
+const TITLES={home:'หน้าหลัก',orders:'งานทั้งหมด',docs:'เอกสาร',ledger:'รายรับ-รายจ่าย',customers:'ลูกค้า',credit:'เครดิต วางบิลสิ้นเดือน',calc:'คิดราคา',set:'ตั้งค่า',more:'เมนูอื่นๆ'};
 
 /* ---------- เครื่องคิดเลข ---------- */
 window._k={e:'',r:''};
@@ -395,7 +417,7 @@ function calcDoc(d){const sub=(d.items||[]).reduce((s,x)=>s+(+x.q||0)*(+x.u||0),
 function docsV(){
   const l=docs.filter(d=>dfil=='all'||d.type==dfil).sort((a,b)=>(b.created||0)-(a.created||0));
   const chips=[['all','ทั้งหมด']].concat(Object.keys(DT).map(k=>[k,DT[k][0]]));
-  return `<button class="bigadd" onclick="newDoc()">${svg('plus',28)}สร้างเอกสาร</button><div class="bar"><div class="tiles" style="flex:1">${chips.map(c=>`<button class="tile${dfil==c[0]?' on':''}" onclick="dfil='${c[0]}';render(true)"><b>${c[0]=='all'?docs.length:docs.filter(d=>d.type==c[0]).length}</b><span>${c[1]}</span></button>`).join('')}</div></div><div class="panel"><div class="tw"><table class="t"><thead><tr><th>เลขที่</th><th>ประเภท</th><th>ลูกค้า</th><th>วันที่</th><th class="num">ยอดรวม</th><th></th></tr></thead><tbody>${l.map(d=>`<tr><td>${esc(d.no)}</td><td><span class="badge" style="--c:${d.type=='quote'?'#4C8DFF':d.type=='invoice'?'#F5A524':d.type=='statement'?'#A78BFA':'#2FD07A'}">${DT[d.type]?DT[d.type][0]:''}</span></td><td>${esc(d.customer)}</td><td>${dshort(d.date)}</td><td class="num">${fmt(d.total)}</td><td><button class="btn sm" onclick="viewDoc('${d.id}')">เปิด</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">ยังไม่มีเอกสาร กด "สร้างเอกสาร" เพื่อทำใบเสนอราคา</td></tr>'}</tbody></table></div></div>`;
+  return `<button class="bigadd" onclick="newDoc()">${svg('plus',28)}สร้างเอกสาร</button><div class="bar"><div class="tiles" style="flex:1">${chips.map(c=>`<button class="tile${dfil==c[0]?' on':''}" onclick="dfil='${c[0]}';render(true)"><b>${c[0]=='all'?docs.length:docs.filter(d=>d.type==c[0]).length}</b><span>${c[1]}</span></button>`).join('')}</div></div><div class="panel"><div class="tw"><table class="t docs"><thead><tr><th>เลขที่</th><th>ประเภท</th><th>ลูกค้า</th><th>วันที่</th><th class="num">ยอดรวม</th><th></th></tr></thead><tbody>${l.map(d=>`<tr><td>${esc(d.no)}</td><td><span class="badge" style="--c:${d.type=='quote'?'#4C8DFF':d.type=='invoice'?'#F5A524':d.type=='statement'?'#A78BFA':'#2FD07A'}">${DT[d.type]?DT[d.type][0]:''}</span></td><td>${esc(d.customer)}</td><td>${dshort(d.date)}</td><td class="num">${fmt(d.total)}</td><td><button class="btn sm" onclick="viewDoc('${d.id}')">เปิด</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">ยังไม่มีเอกสาร กด "สร้างเอกสาร" เพื่อทำใบเสนอราคา</td></tr>'}</tbody></table></div></div>`;
 }
 function newDoc(){df={type:'quote',date:today(),customer:'',phone:'',addr:'',items:[{d:'',q:1,u:0}],disc:0,vat:false,paid:0,note:DNOTE.quote,orderId:''};openModal(docFormHtml())}
 const creditOrdersOf=name=>orders.filter(o=>nkey(o.customer)==nkey(name)&&rest(o)>0).sort((a,b)=>(a.created||0)-(b.created||0));
