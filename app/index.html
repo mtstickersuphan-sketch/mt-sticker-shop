@@ -198,7 +198,7 @@ table.t.docs{min-width:0}
 @media(min-width:1280px){.calcg{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}.calcl{position:sticky;top:12px}}
 .calcg{width:100%;margin-inline:auto}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.1"}
+:root{--ver:"เวอร์ชัน 0.2"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -260,8 +260,8 @@ async function init(){
     authReady=true;render(true)})
 }
 function wm(){const n=shop().name.trim().split(/\s+/);return `<div class="wm"><b>${esc(n[0]||'')}</b>${esc(n.slice(1).join(' '))}</div>`}
-const navs=()=>{const o=role=='owner';return[['home','หน้าหลัก','home'],['orders','งาน','orders'],['docs','เอกสาร','docs']].concat(o?[['ledger','รายรับ-รายจ่าย','ledger']]:[]).concat([['customers','ลูกค้า','users'],['credit','เครดิต','coins'],['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[])};
-const TITLES={home:'หน้าหลัก',orders:'งานทั้งหมด',docs:'เอกสาร',ledger:'รายรับ-รายจ่าย',customers:'ลูกค้า',credit:'เครดิต วางบิลสิ้นเดือน',calc:'คิดราคา',set:'ตั้งค่า',users:'พนักงานและบัญชี',more:'เมนูอื่นๆ'};
+const navs=()=>{const o=role=='owner';return[['home','หน้าหลัก','home'],['orders','งาน','orders'],['docs','เอกสาร','docs']].concat(o?[['ledger','รายรับ-รายจ่าย','ledger']]:[]).concat([['customers','ลูกค้า','users'],['credit','เครดิต','coins'],['calc','คิดราคา','calc']]).concat(role=='staff'?[['acct','บัญชีของฉัน','users']]:[]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[])};
+const TITLES={home:'หน้าหลัก',orders:'งานทั้งหมด',docs:'เอกสาร',ledger:'รายรับ-รายจ่าย',customers:'ลูกค้า',credit:'เครดิต วางบิลสิ้นเดือน',calc:'คิดราคา',set:'ตั้งค่า',users:'พนักงานและบัญชี',acct:'บัญชีของฉัน',more:'เมนูอื่นๆ'};
 
 /* ---------- เครื่องคิดเลข ---------- */
 window._k={e:'',r:''};
@@ -297,7 +297,7 @@ function render(force){
   const ae=document.activeElement;
   if(!force&&(busy||(ae&&/INPUT|SELECT|TEXTAREA/.test(ae.tagName)&&A.contains(ae))))return;
   if(!authReady){A.innerHTML='<p class="mut" style="padding:24px">กำลังโหลด…</p>';return}
-  if(!user){A.innerHTML=`<div class="auth">${wm()}<div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>เข้าสู่ระบบ</h2><label>อีเมล<input id="em" class="fld" type="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" onkeydown="if(event.key=='Enter')$('#pin').focus()"></label><label>รหัสผ่าน<div class="pw"><input id="pin" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key=='Enter')login()"><button type="button" class="eye" aria-label="แสดงหรือซ่อนรหัสผ่าน" onclick="togPw(this)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="sl" d="M4 4l16 16" style="display:none"/></svg></button></div></label><label class="chk"><input type="checkbox" id="rem" checked>จดจำการเข้าสู่ระบบในเครื่องนี้</label><button class="btn red" onclick="login()">เข้าสู่ระบบ</button><button class="btn sm" type="button" onclick="forgotPw()">ลืมรหัสผ่าน</button><span id="msg" class="err"></span></div></div>`;return}
+  if(!user){A.innerHTML=`<div class="auth">${wm()}<div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>เข้าสู่ระบบ</h2><label>อีเมล หรือ ชื่อผู้ใช้<input id="em" class="fld" type="text" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key=='Enter')$('#pin').focus()"></label><label>รหัสผ่าน<div class="pw"><input id="pin" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key=='Enter')login()"><button type="button" class="eye" aria-label="แสดงหรือซ่อนรหัสผ่าน" onclick="togPw(this)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="sl" d="M4 4l16 16" style="display:none"/></svg></button></div></label><label class="chk"><input type="checkbox" id="rem" checked>จดจำการเข้าสู่ระบบในเครื่องนี้</label><button class="btn red" onclick="login()">เข้าสู่ระบบ</button><button class="btn sm" type="button" onclick="forgotPw()">ลืมรหัสผ่าน</button><span id="msg" class="err"></span></div></div>`;return}
   if(!role){A.innerHTML=`<div class="auth">${wm()}<div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>ยังไม่มีสิทธิ์ใช้งาน</h2><p class="mut">บัญชี ${esc(user.email||'')} ยังไม่ได้รับสิทธิ์ ให้เจ้าของร้านเพิ่มบัญชีนี้เป็นพนักงานก่อน</p><button class="btn" onclick="logout()">ออกจากระบบ</button></div></div>`;return}
   if(page=='more'&&false)page='home';
   const act=orders.filter(o=>o.status!='ส่งมอบแล้ว').length;
@@ -305,7 +305,7 @@ function render(force){
   const side=`<aside class="side">${wm()}<nav>${nv.flatMap(n=>n[0]=='calc'?[n,['kalc','เครื่องคิดเลข',n[2]]]:[n]).map(n=>`<button class="ni${page==n[0]?' on':''}" onclick="${n[0]=='kalc'?'openKalc()':`go('${n[0]}')`}">${svg(n[2],20)}<span>${n[1]}</span>${n[0]=='orders'&&act?`<em>${act}</em>`:''}</button>`).join('')}</nav><div class="sidefoot"><span>${role=='owner'?'เข้าใช้งานเป็นเจ้าของร้าน':'เข้าใช้งานเป็นพนักงาน'}</span><button class="btn sm" onclick="logout()">${svg('out',18)}ออกจากระบบ</button></div></aside>`;
   const dt=new Date().toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const top=`<header class="top"><div class="tl"><div class="mwm">${wm()}</div><h1>${TITLES[page]||''}</h1></div><div class="tr"><span class="chip">${dt}</span><span class="who">${role=='owner'?'เจ้าของร้าน':'พนักงาน'}</span><button class="icb" onclick="logout()" aria-label="ออกจากระบบ">${svg('out',20)}</button></div></header>`;
-  const V={home:homeV,orders:ordersV,docs:docsV,ledger:ledgerV,customers:custV,calc:calcV,set:setV,users:staffPanel,more:moreV,credit:creditV}[page]||homeV;
+  const V={home:homeV,orders:ordersV,docs:docsV,ledger:ledgerV,customers:custV,calc:calcV,set:setV,users:staffPanel,acct:acctPage,more:moreV,credit:creditV}[page]||homeV;
   const bn=(role=='owner'?[['home','หน้าหลัก','home'],['orders','งาน','orders'],['docs','เอกสาร','docs'],['ledger','บัญชี','ledger'],['more','อื่นๆ','more']]:[['home','หน้าหลัก','home'],['orders','งาน','orders'],['docs','เอกสาร','docs'],['calc','คิดราคา','calc'],['more','อื่นๆ','more']]);
   const bar=`<nav class="bn">${bn.map(n=>`<button class="${page==n[0]?'on':''}" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}</nav>`;
   A.innerHTML=`<div class="shell">${side}<div class="main">${top}${V()}</div></div>${bar}${modal?`<div class="ov"><div class="mbox" id="mbox">${modal}</div></div>`:''}`;
@@ -315,18 +315,24 @@ function closeModal(){modal='';busy=false;render(true)}
 function setModal(h){modal=h;const m=$('#mbox');if(m)m.innerHTML=h;else render(true);if(typeof fitPaper=='function'){setTimeout(fitPaper,0);setTimeout(fitPaper,150)}}
 function togPw(b){const i=b.parentNode.querySelector('input'),on=i.type=='password';i.type=on?'text':'password';b.querySelector('.sl').style.display=on?'':'none';i.focus()}
 const RK='mt_remember',lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
-const authErr=e=>{const c=e&&e.code||'';return c=='auth/invalid-credential'||c=='auth/wrong-password'||c=='auth/user-not-found'||c=='auth/invalid-login-credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':c=='auth/invalid-email'?'รูปแบบอีเมลไม่ถูกต้อง':c=='auth/too-many-requests'?'ลองผิดหลายครั้งเกินไป รอสักครู่แล้วลองใหม่':c=='auth/network-request-failed'?'เชื่อมต่ออินเทอร์เน็ตไม่ได้':c=='auth/email-already-in-use'?'อีเมลนี้มีบัญชีอยู่แล้ว':c=='auth/weak-password'?'รหัสผ่านต้องมีอย่างน้อย 6 ตัว':c=='permission-denied'||c=='auth/unauthorized-domain'?'ไม่มีสิทธิ์ หรือโดเมนนี้ยังไม่ได้อนุญาตใน Firebase':'ไม่สำเร็จ ลองใหม่อีกครั้ง'};
-async function login(){const e=$('#em').value.trim(),p=$('#pin').value,m=$('#msg');if(!e||!p){m.textContent='ใส่อีเมลและรหัสผ่านก่อน';return}
+const UDOM='@mtsticker.local';
+const toEmail=v=>{v=(v||'').trim();return v.includes('@')?v:v.toLowerCase()+UDOM};
+const uName=e=>(e||'').endsWith(UDOM)?e.slice(0,-UDOM.length):(e||'');
+const authErr=e=>{const c=e&&e.code||'';return c=='auth/invalid-credential'||c=='auth/wrong-password'||c=='auth/user-not-found'||c=='auth/invalid-login-credentials'?'อีเมลหรือรหัสผ่านไม่ถูกต้อง':c=='auth/invalid-email'?'รูปแบบอีเมลไม่ถูกต้อง':c=='auth/too-many-requests'?'ลองผิดหลายครั้งเกินไป รอสักครู่แล้วลองใหม่':c=='auth/network-request-failed'?'เชื่อมต่ออินเทอร์เน็ตไม่ได้':c=='auth/email-already-in-use'?'อีเมลนี้มีบัญชีอยู่แล้ว':c=='auth/requires-recent-login'?'เซสชันหมดอายุ ออกจากระบบแล้วเข้าใหม่ก่อน':c=='auth/weak-password'?'รหัสผ่านต้องมีอย่างน้อย 6 ตัว':c=='permission-denied'||c=='auth/unauthorized-domain'?'ไม่มีสิทธิ์ หรือโดเมนนี้ยังไม่ได้อนุญาตใน Firebase':'ไม่สำเร็จ ลองใหม่อีกครั้ง'};
+async function login(){const e=toEmail($('#em').value),p=$('#pin').value,m=$('#msg');if(!$('#em').value.trim()||!p){m.textContent='ใส่อีเมลหรือชื่อผู้ใช้ และรหัสผ่านก่อน';return}
   m.textContent='กำลังเข้าสู่ระบบ...';
   try{await auth.setPersistence($('#rem')&&$('#rem').checked?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);await auth.signInWithEmailAndPassword(e,p)}catch(x){const mm=$('#msg');if(mm)mm.textContent=authErr(x)}}
 async function forgotPw(){const e=$('#em').value.trim(),m=$('#msg');if(!e){m.textContent='ใส่อีเมลก่อน แล้วกดลืมรหัสผ่านอีกครั้ง';return}
+  if(!e.includes('@')){m.textContent='พนักงานลืมรหัสผ่าน ให้แจ้งเจ้าของร้านเพื่อตั้งใหม่';return}
   try{await auth.sendPasswordResetEmail(e);m.style.color='var(--green)';m.textContent='ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว (ดูในกล่องสแปมด้วย)'}catch(x){m.textContent=authErr(x)}}
-async function addStaff(){const e=$('#sf_e').value.trim(),p=$('#sf_p').value,m=$('#sf_m');
-  if(!e||p.length<6){m.textContent='ใส่อีเมล และรหัสผ่านอย่างน้อย 6 ตัว';return}
+async function addStaff(){const u=$('#sf_e').value.trim().toLowerCase(),p=$('#sf_p').value,m=$('#sf_m');
+  if(!/^[a-z0-9._-]{3,30}$/.test(u)){m.textContent='ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษรอังกฤษ ตัวเลข . _ - ยาว 3-30 ตัว (หรือใช้เบอร์โทร)';return}
+  if(p.length<6){m.textContent='รหัสผ่านต้องมีอย่างน้อย 6 ตัว';return}
+  const e=u+UDOM;
   m.textContent='กำลังสร้างบัญชี...';
   try{let sec;try{sec=firebase.app('sec')}catch(_){sec=firebase.initializeApp(FBC,'sec')}
     const cr=await sec.auth().createUserWithEmailAndPassword(e,p);
-    await db.doc('staff/'+cr.user.uid).set({email:e,created:Date.now()});
+    await db.doc('staff/'+cr.user.uid).set({email:e,user:u,created:Date.now()});
     await sec.auth().signOut();$('#sf_e').value='';$('#sf_p').value='';m.textContent='เพิ่มพนักงานแล้ว'}
   catch(x){m.textContent=authErr(x)}}
 function rmStaff(id,b){if(b.dataset.s){db.doc('staff/'+id).delete().catch(()=>{})}else{b.dataset.s=1;b.textContent='กดอีกครั้งเพื่อถอนสิทธิ์'}}
@@ -342,7 +348,11 @@ async function importBackup(inp){const f=inp.files[0],m=$('#im_m');if(!f)return;
     for(let i=0;i<ops.length;i+=400){const bt=db.batch();ops.slice(i,i+400).forEach(([p,d])=>bt.set(db.doc(p),d));await bt.commit()}
     m.textContent='นำเข้าสำเร็จ '+ops.length+' รายการ'}catch(x){m.textContent='นำเข้าไม่สำเร็จ: '+(x&&x.message||'')}
   inp.value=''}
-function staffPanel(){if(role!='owner')return '';return `<div class="g2 even" style="padding-bottom:24px"><div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>พนักงาน</h2><p class="mut">พนักงานเข้าได้ด้วยอีเมลและรหัสผ่านของตัวเอง เห็นเฉพาะงาน เอกสาร ลูกค้า และคิดราคา</p><div style="display:flex;flex-direction:column;gap:8px">${staffList.length?staffList.map(s=>`<div class="row" style="align-items:center;justify-content:space-between"><span>${esc(s.email||s.id)}</span><button class="btn sm danger" onclick="rmStaff('${esc(s.id)}',this)">ถอนสิทธิ์</button></div>`).join(''):'<span class="mut">ยังไม่มีพนักงาน</span>'}</div><label>อีเมลพนักงาน<input id="sf_e" class="fld" type="email" autocapitalize="off" autocomplete="off"></label><label>รหัสผ่านพนักงาน (อย่างน้อย 6 ตัว)<input id="sf_p" class="fld" type="text" autocapitalize="off" autocomplete="off"></label><button class="btn red" onclick="addStaff()">เพิ่มพนักงาน</button><span id="sf_m" class="err"></span></div><div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>บัญชีของฉัน</h2><p class="mut">เข้าใช้ด้วย ${esc(user&&user.email||'')}</p><button class="btn" onclick="resetMine()">ส่งลิงก์เปลี่ยนรหัสผ่านทางอีเมล</button><span id="rs_m" class="mut"></span><h2 style="margin-top:8px">นำเข้าข้อมูลสำรอง</h2><p class="mut">เลือกไฟล์สำรอง .json ที่เคยดาวน์โหลดไว้ เพื่อย้ายข้อมูลเก่าเข้ามา</p><input type="file" accept="application/json,.json" onchange="importBackup(this)"><span id="im_m" class="mut"></span></div></div>`}
+async function changePw(){const o=$('#cp_o').value,n=$('#cp_n').value,m=$('#cp_m');m.style.color='';if(!o||n.length<6){m.textContent='ใส่รหัสผ่านเดิม และรหัสผ่านใหม่อย่างน้อย 6 ตัว';return}
+  try{await user.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(user.email,o));await user.updatePassword(n);m.style.color='var(--green)';m.textContent='เปลี่ยนรหัสผ่านแล้ว';$('#cp_o').value='';$('#cp_n').value=''}catch(x){m.textContent=authErr(x)}}
+const pwBox=()=>`<h2 style="margin-top:8px">เปลี่ยนรหัสผ่านของฉัน</h2><label>รหัสผ่านเดิม<input id="cp_o" class="fld" type="password" autocomplete="current-password"></label><label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)<input id="cp_n" class="fld" type="password" autocomplete="new-password"></label><button class="btn" onclick="changePw()">เปลี่ยนรหัสผ่าน</button><span id="cp_m" class="err"></span>`;
+function acctPage(){return `<div class="g2 even" style="padding-bottom:24px"><div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>บัญชีของฉัน</h2><p class="mut">เข้าใช้ด้วย ${esc(uName(user&&user.email))}</p>${pwBox()}</div></div>`}
+function staffPanel(){if(role!='owner')return '';return `<div class="g2 even" style="padding-bottom:24px"><div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>พนักงาน</h2><p class="mut">พนักงานเข้าได้ด้วยชื่อผู้ใช้ (หรือเบอร์โทร) และรหัสผ่านของตัวเอง ไม่ต้องมีอีเมล เห็นเฉพาะงาน เอกสาร ลูกค้า และคิดราคา</p><div style="display:flex;flex-direction:column;gap:8px">${staffList.length?staffList.map(s=>`<div class="row" style="align-items:center;justify-content:space-between"><span>${esc(s.user||uName(s.email)||s.id)}</span><button class="btn sm danger" onclick="rmStaff('${esc(s.id)}',this)">ถอนสิทธิ์</button></div>`).join(''):'<span class="mut">ยังไม่มีพนักงาน</span>'}</div><label>ชื่อผู้ใช้ หรือเบอร์โทรพนักงาน<input id="sf_e" class="fld" type="text" inputmode="text" autocapitalize="off" autocomplete="off" placeholder="เช่น somchai หรือ 0812345678"></label><label>รหัสผ่านพนักงาน (อย่างน้อย 6 ตัว)<input id="sf_p" class="fld" type="text" autocapitalize="off" autocomplete="off"></label><button class="btn red" onclick="addStaff()">เพิ่มพนักงาน</button><span id="sf_m" class="err"></span></div><div class="panel" style="display:flex;flex-direction:column;gap:12px"><h2>บัญชีของฉัน</h2><p class="mut">เข้าใช้ด้วย ${esc(user&&user.email||'')}</p>${pwBox()}<button class="btn sm" onclick="resetMine()">ส่งลิงก์เปลี่ยนรหัสผ่านทางอีเมล (เจ้าของร้าน)</button><span id="rs_m" class="mut"></span><h2 style="margin-top:8px">นำเข้าข้อมูลสำรอง</h2><p class="mut">เลือกไฟล์สำรอง .json ที่เคยดาวน์โหลดไว้ เพื่อย้ายข้อมูลเก่าเข้ามา</p><input type="file" accept="application/json,.json" onchange="importBackup(this)"><span id="im_m" class="mut"></span></div></div>`}
 const printers=()=>Array.isArray(cfg.printers)?cfg.printers:['EPSON S8','Roland UV'];
 window._pf='';
 const mat=n=>cfg.materials.find(m=>m.n==n);
@@ -876,8 +886,8 @@ async function rmM(b){
   if(!b.classList.contains('arm')){b.classList.add('arm');b.setAttribute('aria-label','กดอีกครั้งเพื่อยืนยันการลบ');setTimeout(()=>{if(b.isConnected){b.classList.remove('arm');b.setAttribute('aria-label','ลบวัสดุนี้')}},4000);return}
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
-function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261109a';
+function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
+const BUILD='20261109b';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
