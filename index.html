@@ -188,6 +188,10 @@ table.t.docs{min-width:0}
 .calcl{display:flex;flex-direction:column;gap:12px;min-width:0}.calcr{min-width:0}
 @media(min-width:1280px){.calcg{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}.calcl{position:sticky;top:12px}}
 @media(min-width:760px) and (max-width:1279px){.calcg{max-width:760px}}
+/* version label */
+:root{--ver:"เวอร์ชัน 0.1"}
+.auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
+.more::after{grid-column:1/-1}
 </style>
 <div id="app"><p class="mut" style="padding:24px">กำลังโหลด…</p></div>
 <script>
