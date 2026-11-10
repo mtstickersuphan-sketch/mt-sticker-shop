@@ -197,8 +197,9 @@ table.t.docs{min-width:0}
 .calcl{display:flex;flex-direction:column;gap:12px;min-width:0}.calcr{min-width:0}
 @media(min-width:1280px){.calcg{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}.calcl{position:sticky;top:12px}}
 .calcg{width:100%;margin-inline:auto}
+/* nt alert */.ntalert{background:linear-gradient(135deg,#B3121F,#7F0D18)!important;border-color:#FF4D5E!important;box-shadow:0 0 0 1px #FF4D5E,0 8px 24px rgba(225,29,46,.35)}.ntalert h2,.ntalert .ntb,.ntalert small{color:#fff!important}.ntalert .ntb small{opacity:.85}.ntalert .nt .ntb{border-bottom-color:rgba(255,255,255,.25)}.ntalert .ntb:hover{background:rgba(255,255,255,.12)}.ntcount{display:inline-block;margin-left:8px;min-width:22px;padding:1px 8px;border-radius:99px;background:#fff;color:#B3121F;font-size:13px;font-weight:700;text-align:center}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.3"}
+:root{--ver:"เวอร์ชัน 0.3.1"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -414,7 +415,7 @@ function homeV(){
   orders.filter(o=>o.status=='พร้อมส่ง').forEach(o=>nts.push(['box','var(--green)','พร้อมส่งมอบ: '+o.customer,rest(o)?'ยังค้างชำระ ฿'+fmt(rest(o)):'ชำระครบแล้ว','พร้อมส่ง',o.customer]));
   orders.filter(o=>o.status=='รออนุมัติแบบ').forEach(o=>nts.push(['pen','var(--orange)','รอลูกค้าอนุมัติแบบ: '+o.customer,o.job,'รออนุมัติแบบ',o.customer]));
   orders.filter(o=>o.status=='ส่งมอบแล้ว'&&rest(o)>0).forEach(o=>nts.push(['cash','var(--blue)','ส่งมอบแล้วแต่ค้างชำระ: '+o.customer,'฿'+fmt(rest(o)),'ส่งมอบแล้ว',o.customer]));
-  const ntv=`<div class="panel"><h2>เรื่องที่ต้องตาม</h2><div class="nt">${nts.slice(0,6).map(n=>`<button type="button" class="ntb" data-f="${esc(n[4]||'all')}" data-c="${esc(n[5]||'')}" onclick="goOrd(this.dataset.f,this.dataset.c)"><span class="ico" style="--c:${n[1]}">${svg(n[0],18)}</span><span>${esc(n[2])}<small>${esc(n[3])}</small></span></button>`).join('')||'<p class="mut">ไม่มีเรื่องที่ต้องตามตอนนี้</p>'}</div></div>`;
+  const ntv=`<div class="panel${nts.length?' ntalert':''}"><h2>${nts.length?'🔔 ':''}เรื่องที่ต้องตาม${nts.length?'<span class="ntcount">'+nts.length+'</span>':''}</h2><div class="nt">${nts.slice(0,6).map(n=>`<button type="button" class="ntb" data-f="${esc(n[4]||'all')}" data-c="${esc(n[5]||'')}" onclick="goOrd(this.dataset.f,this.dataset.c)"><span class="ico" style="--c:${n[1]}">${svg(n[0],18)}</span><span>${esc(n[2])}<small>${esc(n[3])}</small></span></button>`).join('')||'<p class="mut">ไม่มีเรื่องที่ต้องตามตอนนี้</p>'}</div></div>`;
   const rec=orders.slice().sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,6);
   const tbl=`<div class="panel"><h2>งานล่าสุด<button class="btn sm" onclick="go('orders')">ดูทั้งหมด</button></h2><div class="tw"><table class="t"><thead><tr><th>เลขที่</th><th>ลูกค้า</th><th>งาน</th><th class="num">ราคา</th><th>สถานะ</th><th>ส่ง</th></tr></thead><tbody>${rec.map(o=>`<tr><td>${esc(o.no||'#'+o.id.slice(0,4))}</td><td>${esc(o.customer)}</td><td>${esc(o.job)}</td><td class="num">${fmt(o.price)}</td><td><span class="badge" style="--c:${STC[Math.max(0,ST.indexOf(o.status))]}">${esc(o.status)}</span></td><td>${dshort(o.due)}${isLate(o)?' <span class="late">เลย</span>':''}</td></tr>`).join('')||'<tr><td colspan="6" class="mut">ยังไม่มีงาน</td></tr>'}</tbody></table></div></div>`;
   const s=shop();
@@ -888,7 +889,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261110a';
+const BUILD='20261110b';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
