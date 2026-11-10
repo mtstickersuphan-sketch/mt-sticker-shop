@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.3.4)</title>
+<title>MT STICKER (ตัวอย่าง 0.3.5)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -199,7 +199,7 @@ table.t.docs{min-width:0}
 .calcg{width:100%;margin-inline:auto}
 /* nt alert */.ntalert{background:linear-gradient(135deg,#B3121F,#7F0D18)!important;border-color:#FF4D5E!important;box-shadow:0 0 0 1px #FF4D5E,0 8px 24px rgba(225,29,46,.35)}.ntalert h2,.ntalert .ntb,.ntalert small{color:#fff!important}.ntalert .ntb small{opacity:.85}.ntalert .nt .ntb{border-bottom-color:rgba(255,255,255,.25)}.ntalert .ntb:hover{background:rgba(255,255,255,.12)}.ntcount{display:inline-block;margin-left:8px;min-width:22px;padding:1px 8px;border-radius:99px;background:#fff;color:#B3121F;font-size:13px;font-weight:700;text-align:center}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.3.4 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.3.5 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -737,10 +737,12 @@ async function expPdf(){
   catch(e){wrap.remove();exMsg('สร้างไฟล์ PDF ไม่สำเร็จ ลองใหม่อีกครั้ง')}}
 function chgMonth(n){const p=lm.split('-'),d=new Date(+p[0],+p[1]-1+n,1);lm=d.getFullYear()+'-'+pad(d.getMonth()+1);render(true)}
 function delEnt(id,b){if(b.dataset.s){db.doc('ledger/'+id).delete().catch(()=>{})}else{b.dataset.s=1;b.style.color='#FF8A94';b.setAttribute('aria-label','กดอีกครั้งเพื่อลบ')}}
-function openEnt(){openModal(`<h2>บันทึกรายการ</h2><div class="row"><label>ประเภท<select id="lk" onchange="entCats()"><option value="in">รายรับ</option><option value="out">รายจ่าย</option></select></label><label>หมวด<select id="lc"></select></label></div><div class="row"><label>จำนวนเงิน (บาท)<input id="la" type="number" inputmode="decimal"></label><label>วันที่<input id="ld" type="date" value="${today()}"></label></div><label>รายละเอียด<input id="ln" placeholder="เช่น ซื้อไวนิล 1 ม้วน"></label><span id="le" class="err"></span><div class="row"><button class="btn red" onclick="saveEnt()">บันทึก</button><button class="btn" onclick="closeModal()">ยกเลิก</button></div>`);entCats();$('#la').focus()}
-function entCats(){$('#lc').innerHTML=($('#lk').value=='in'?CIN:COUT).map(c=>`<option>${c}</option>`).join('')}
+function openEnt(){openModal(`<h2>บันทึกรายการ</h2><div class="row"><label>ประเภท<select id="lk" onchange="entCats()"><option value="in">รายรับ</option><option value="out">รายจ่าย</option></select></label><label>หมวด<select id="lc" onchange="catOther()"></select><span id="lcw" style="display:none;gap:6px"><input id="lct" placeholder="พิมพ์ระบุเอง เช่น ค่าซ่อมเครื่อง" style="min-width:0;flex:1"><button type="button" class="btn sm" title="เลือกจากรายการ" onclick="catBack()">▾</button></span></label></div><div class="row"><label>จำนวนเงิน (บาท)<input id="la" type="number" inputmode="decimal"></label><label>วันที่<input id="ld" type="date" value="${today()}"></label></div><label>รายละเอียด<input id="ln" placeholder="เช่น ซื้อไวนิล 1 ม้วน"></label><span id="le" class="err"></span><div class="row"><button class="btn red" onclick="saveEnt()">บันทึก</button><button class="btn" onclick="closeModal()">ยกเลิก</button></div>`);entCats();$('#la').focus()}
+function entCats(){$('#lc').innerHTML=($('#lk').value=='in'?CIN:COUT).map(c=>`<option>${c}</option>`).join('');catOther()}
+function catOther(){const o=$('#lc').value=='อื่นๆ',w=$('#lcw');w.style.display=o?'flex':'none';$('#lc').style.display=o?'none':'';if(o)$('#lct').focus()}
+function catBack(){$('#lc').selectedIndex=0;catOther()}
 async function saveEnt(){const a=+$('#la').value;if(!(a>0)){$('#le').textContent='ใส่จำนวนเงินมากกว่า 0';return}
-  try{await db.collection('ledger').add({date:$('#ld').value||today(),kind:$('#lk').value,cat:$('#lc').value,amt:a,note:$('#ln').value.trim(),created:Date.now()});closeModal()}catch(e){$('#le').textContent='บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'}}
+  try{await db.collection('ledger').add({date:$('#ld').value||today(),kind:$('#lk').value,cat:$('#lc').value=='อื่นๆ'?($('#lct').value.trim()||'อื่นๆ'):$('#lc').value,amt:a,note:$('#ln').value.trim(),created:Date.now()});closeModal()}catch(e){$('#le').textContent='บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'}}
 /* ---------- customers ---------- */
 const nkey=s=>String(s||'').trim().toLowerCase();
 function custAll(){const m={};
@@ -894,7 +896,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261110f';
+const BUILD='20261110g';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
