@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.3.1)</title>
+<title>MT STICKER (ตัวอย่าง 0.3.2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -199,7 +199,7 @@ table.t.docs{min-width:0}
 .calcg{width:100%;margin-inline:auto}
 /* nt alert */.ntalert{background:linear-gradient(135deg,#B3121F,#7F0D18)!important;border-color:#FF4D5E!important;box-shadow:0 0 0 1px #FF4D5E,0 8px 24px rgba(225,29,46,.35)}.ntalert h2,.ntalert .ntb,.ntalert small{color:#fff!important}.ntalert .ntb small{opacity:.85}.ntalert .nt .ntb{border-bottom-color:rgba(255,255,255,.25)}.ntalert .ntb:hover{background:rgba(255,255,255,.12)}.ntcount{display:inline-block;margin-left:8px;min-width:22px;padding:1px 8px;border-radius:99px;background:#fff;color:#B3121F;font-size:13px;font-weight:700;text-align:center}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.3.1 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.3.2 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -553,7 +553,7 @@ function paper(d){
   const note=d.note?`<div class="nt"><b>หมายเหตุ</b><div>${esc(d.note).replace(/\n/g,'<br>')}</div></div>`:'';
   const tot=`<div class="tt2"><div><span>รวมเป็นเงิน</span><span>${fmt2(t.sub)}</span></div>${t.disc?`<div><span>ส่วนลด</span><span>-${fmt2(t.disc)}</span></div>`:''}${t.vat?`<div><span>ภาษีมูลค่าเพิ่ม 7%</span><span>${fmt2(t.vat)}</span></div>`:''}<div class="g"><span>ยอดรวมทั้งสิ้น</span><span>${fmt2(t.total)}</span></div>${t.paid&&!isR?`<div><span>ชำระแล้ว</span><span>-${fmt2(t.paid)}</span></div><div class="g2"><span>คงเหลือ</span><span>${fmt2(t.bal)}</span></div>`:''}</div>`;
   const pay=isR?`<div class="pay"><b>ชำระโดย</b>${[['cash','เงินสด'],['transfer','โอนเงิน'+(d.method=='transfer'&&d.bank?' ('+esc(d.bank)+')':'')]].map(x=>`<span><u${d.method==x[0]?' class="on"':''}>${d.method==x[0]?'✓':''}</u>${x[1]}</span>`).join('')}</div>`:'';
-  const bank=bt?`<div class="bk"><b>ช่องทางชำระเงิน</b><div>${esc(bt)}</div></div>`:'';
+  const bank=bt&&!isR?`<div class="bk"><b>ช่องทางชำระเงิน</b><div>${esc(bt)}</div></div>`:'';
   const L=d.type=='quote'?['ผู้เสนอราคา','ผู้อนุมัติสั่งซื้อ']:d.type=='statement'?['ผู้วางบิล','ผู้รับวางบิล']:d.type=='invoice'?['ผู้รับสินค้า','ผู้รับมอบอำนาจ']:['ผู้รับเงิน','ผู้ชำระเงิน'];
   return `<div class="paper ${sz} t0">${d.head=='co'?`<div class="hd img"><img src="${COHDR}" alt="" style="width:80%;margin:0 auto;display:block"></div>`:`<div class="hd img"><img src="${SHOPHDR}" alt="" style="width:80%;margin:0 auto;display:block"></div>`}
 <div class="tl"><div><h1>${DT[d.type][0]}</h1><em>${DEN[d.type]}</em></div><div class="mt"><div><b>เลขที่</b><span>${esc(d.no)}</span></div><div><b>วันที่</b><span>${dth(d.date)}</span></div></div></div>
@@ -889,7 +889,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261110b';
+const BUILD='20261110c';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
