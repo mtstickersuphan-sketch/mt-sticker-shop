@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.3.5)</title>
+<title>MT STICKER (ตัวอย่าง 0.4)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -198,8 +198,9 @@ table.t.docs{min-width:0}
 @media(min-width:1280px){.calcg{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px}.calcl{position:sticky;top:12px}}
 .calcg{width:100%;margin-inline:auto}
 /* nt alert */.ntalert{background:linear-gradient(135deg,#B3121F,#7F0D18)!important;border-color:#FF4D5E!important;box-shadow:0 0 0 1px #FF4D5E,0 8px 24px rgba(225,29,46,.35)}.ntalert h2,.ntalert .ntb,.ntalert small{color:#fff!important}.ntalert .ntb small{opacity:.85}.ntalert .nt .ntb{border-bottom-color:rgba(255,255,255,.25)}.ntalert .ntb:hover{background:rgba(255,255,255,.12)}.ntcount{display:inline-block;margin-left:8px;min-width:22px;padding:1px 8px;border-radius:99px;background:#fff;color:#B3121F;font-size:13px;font-weight:700;text-align:center}
+/* price list */.prl{display:flex;flex-direction:column}.prh,.prr{display:grid;grid-template-columns:1fr 110px 110px;gap:8px;align-items:center;padding:9px 4px}.prh{font-size:12px;color:var(--mut,#8b95a7);border-bottom:1px solid var(--line,#2a3140)}.prh span:not(:first-child),.prr b{text-align:right}.prr{border-bottom:1px solid var(--line,#2a3140)}.prr:last-child{border-bottom:0}.prr small{display:block;font-size:12px;color:var(--mut,#8b95a7);font-weight:400}.prr b{font-size:16px}.prw{color:#7DD3A8}@media(max-width:480px){.prh,.prr{grid-template-columns:1fr 80px 80px}.prr b{font-size:15px}}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.3.5 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.4 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -423,7 +424,8 @@ function homeV(){
   const rec=orders.slice().sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,6);
   const tbl=`<div class="panel"><h2>งานล่าสุด<button class="btn sm" onclick="go('orders')">ดูทั้งหมด</button></h2><div class="tw"><table class="t"><thead><tr><th>เลขที่</th><th>ลูกค้า</th><th>งาน</th><th class="num">ราคา</th><th>สถานะ</th><th>ส่ง</th></tr></thead><tbody>${rec.map(o=>`<tr><td>${esc(o.no||'#'+o.id.slice(0,4))}</td><td>${esc(o.customer)}</td><td>${esc(o.job)}</td><td class="num">${fmt(o.price)}</td><td><span class="badge" style="--c:${STC[Math.max(0,ST.indexOf(o.status))]}">${esc(o.status)}</span></td><td>${dshort(o.due)}${isLate(o)?' <span class="late">เลย</span>':''}</td></tr>`).join('')||'<tr><td colspan="6" class="mut">ยังไม่มีงาน</td></tr>'}</tbody></table></div></div>`;
   const s=shop();
-  return `<div class="hero"><span class="dt">วันนี้</span>${wm()}<p>ยินดีต้อนรับสู่ระบบจัดการร้าน${esc(s.name)}</p></div><button class="bigadd" onclick="openOrder()">${svg('plus',28)}เพิ่มงานใหม่</button><div class="kpis">${kpis}</div>${ntv}<div class="panel"><h2>เครื่องมือ</h2><div class="nt"><button type="button" class="ntb" onclick="go('calc')"><span class="ico" style="--c:var(--orange)">${svg('coins',18)}</span><span>คิดราคา<small>คิดราคางาน และคำนวณจำนวนชิ้นต่อแผ่น</small></span></button><button type="button" class="ntb" onclick="openKalc()"><span class="ico" style="--c:var(--blue)">${svg('docs',18)}</span><span>เครื่องคิดเลข<small>บวก ลบ คูณ หาร</small></span></button></div></div>`;
+  const pms=cfg.materials.filter(m=>m.n&&m.n!='-'&&(m.sell||m.ws));const prv=pms.length?`<div class="panel"><h2>ราคางานสติ๊กเกอร์</h2><div class="prl"><div class="prh"><span>รายการ</span><span>ราคาหน้าร้าน</span><span>ราคาส่ง</span></div>${pms.map(m=>`<div class="prr"><span>${esc(m.n)}<small>ต่อ${UL[m.pu||'sqm']||'ตร.ม.'}</small></span><b>${m.sell?'฿'+fmt(m.sell):'-'}</b><b class="prw">${m.ws?'฿'+fmt(m.ws):'-'}</b></div>`).join('')}</div></div>`:'';
+  return `<div class="hero"><span class="dt">วันนี้</span>${wm()}<p>ยินดีต้อนรับสู่ระบบจัดการร้าน${esc(s.name)}</p></div><button class="bigadd" onclick="openOrder()">${svg('plus',28)}เพิ่มงานใหม่</button><div class="kpis">${kpis}</div>${ntv}${prv}<div class="panel"><h2>เครื่องมือ</h2><div class="nt"><button type="button" class="ntb" onclick="go('calc')"><span class="ico" style="--c:var(--orange)">${svg('coins',18)}</span><span>คิดราคา<small>คิดราคางาน และคำนวณจำนวนชิ้นต่อแผ่น</small></span></button><button type="button" class="ntb" onclick="openKalc()"><span class="ico" style="--c:var(--blue)">${svg('docs',18)}</span><span>เครื่องคิดเลข<small>บวก ลบ คูณ หาร</small></span></button></div></div>`;
 }
 /* ---------- orders ---------- */
 function ordersV(){
@@ -896,7 +898,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261110g';
+const BUILD='20261111a';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
