@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.5.7)</title>
+<title>MT STICKER (ตัวอย่าง 0.5.8)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -205,8 +205,9 @@ table.t.docs{min-width:0}
 .nthd{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;grid-template-areas:'t c' 's c';gap:4px 12px;width:100%;cursor:pointer;color:#fff;align-items:center}.nthd .nttl{grid-area:t;font-size:18px;font-weight:700;display:flex;align-items:center}.nthd .ntsum{grid-area:s;font-size:14px;color:#fff;opacity:.95}.nthd .ntsum b{background:#fff;color:#8A5A0B;padding:1px 10px;border-radius:99px;font-weight:700}.nthd .ntchev{grid-area:c;font-size:22px;transition:transform .2s}.ntalert.open .ntchev{transform:rotate(180deg)}.ntalert .ntbody{display:none;margin-top:10px}.ntalert.open .ntbody{display:block}.nthd:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
 @media(min-width:701px){.tiles{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.tile{padding:10px;gap:8px;border-radius:14px;min-width:0}.tile .ico{width:36px;height:36px}.tile .ico svg{width:20px;height:20px}.tile b{font-size:22px}.tile>div:last-of-type{min-width:0}.tile small,.tile .tl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}@media(min-width:701px) and (max-width:1399px){.tile{flex-direction:column;align-items:flex-start;gap:6px}}
 .kpi.kred span,.kpi.kred b,.kpi.kred small{color:#FF4D5E}
+.tile .tl{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.2px;margin-bottom:1px}.tile.on .tl{color:#fff}@media(max-width:700px){.tile .tl{font-size:14px}}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.5.7 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.5.8 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -910,7 +911,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111m';
+const BUILD='20261111n';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
