@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.6.2)</title>
+<title>MT STICKER (ตัวอย่าง 0.6.3)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -208,7 +208,7 @@ table.t.docs{min-width:0}
 .tile .tl{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.2px;margin-bottom:1px}.tile.on .tl{color:#fff}@media(max-width:700px){.tile .tl{font-size:14px}}
 .prbtn2{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 20px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.3)}.prbtn2:active{transform:scale(.98)}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.6.2 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.6.3 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -374,22 +374,22 @@ const matOpts=sel=>cfg.materials.slice().sort((a,b)=>(b.n=='-')-(a.n=='-')).map(
 const UL={pc:'ชิ้น',sqm:'ตร.ม.',m:'เมตร'};
 const uOpts=sel=>[['m','เมตร'],['sqm','ตร.ม.'],['pc','ชิ้น'],['x','อื่นๆ (พิมพ์เอง)']].map(x=>`<option value="${x[0]}"${(sel||'pc')==x[0]?' selected':''}>${x[1]}</option>`).join('');
 const szOn=p=>{const k=$('#'+p+'k');return !k||k.checked};
-const szChk=(p,fn)=>`<label class="chk" id="${p}kL" style="display:none"><input type="checkbox" id="${p}k" checked onchange="${fn}">คำนวณราคาจากขนาด (ไม่ติ๊ก = คิดจากจำนวนอย่างเดียว)</label>`;
+const szChk=(p,fn)=>`<label class="chk" id="${p}kL" style="display:none"><input type="checkbox" id="${p}k" checked onchange="${fn}">ใส่พื้นที่จากขนาดลงในช่องจำนวนให้อัตโนมัติ (เอาติ๊กออก = กรอกจำนวนเอง)</label>`;
 const uBox=(id,v)=>`<span class="uw" style="display:${v?'flex':'none'};gap:6px"><input id="${id}t" class="utx" placeholder="พิมพ์หน่วย เช่น ชุด แผ่น ใบ" value="${esc(v||'')}" style="min-width:0;flex:1"><button type="button" class="btn sm" title="เลือกจากรายการ" onclick="uBack('${id}')">▾</button></span>`;
 function uBack(id){const e=$('#'+id);e.value='pc';e.dispatchEvent(new Event('change'))}
 const uCode=v=>v=='x'?'pc':v;
 const uLab=id=>($('#'+id).value=='x'?(($('#'+id+'t')||{}).value||'').trim():'');
-function unitUi(w,h,u){const v0=$('#'+u).value,v=uCode(v0),a=$('#'+w),b=$('#'+h);const tb=$('#'+u+'t');const sl=$('#'+u);if(tb){const wr=tb.parentNode,was=wr.style.display=='flex';wr.style.display=v0=='x'?'flex':'none';sl.style.display=v0=='x'?'none':'';if(v0=='x'&&!was)tb.focus()}if(!a||!b)return;b.disabled=false;a.disabled=false;a.style.opacity=1;b.style.opacity=1;const ph=v=='pc'?'':'ไม่ใส่ก็ได้';a.placeholder=ph;b.placeholder=ph;const pf=w.slice(0,-1),kl=$('#'+pf+'kL');if(kl)kl.style.display=(v!='pc'&&+a.value>0&&+b.value>0)?'flex':'none'}
+function unitUi(w,h,u){const v0=$('#'+u).value,v=uCode(v0),a=$('#'+w),b=$('#'+h);const tb=$('#'+u+'t');const sl=$('#'+u);if(tb){const wr=tb.parentNode,was=wr.style.display=='flex';wr.style.display=v0=='x'?'flex':'none';sl.style.display=v0=='x'?'none':'';if(v0=='x'&&!was)tb.focus()}if(!a||!b)return;b.disabled=false;a.disabled=false;a.style.opacity=1;b.style.opacity=1;const ph=v=='pc'?'':'ไม่ใส่ก็ได้';a.placeholder=ph;b.placeholder=ph;const pf=w.slice(0,-1),kl=$('#'+pf+'kL'),qi=$('#'+pf+'q'),ok=v!='pc'&&+a.value>0&&+b.value>0;if(kl)kl.style.display=ok?'flex':'none';if(qi){const auto=ok&&szOn(pf);qi.readOnly=auto;qi.style.opacity=auto?.75:1;if(auto){const A=+a.value,B=+b.value;qi.value=+(v=='sqm'?A*B/10000:Math.max(A,B)/100).toFixed(2)}}}
 const ordSize=o=>(o.unit=='sqm'?(o.w&&o.h?o.w+'×'+o.h+' ซม.':''):o.unit=='m'?(o.w?'กว้าง '+o.w+' ซม.':''):(o.w&&o.h?o.w+'×'+o.h+' ซม.':''));
 function areaUi(p){const bx=$('#'+p+'area');if(!bx)return;const u=uCode($('#'+p+'u').value),w=+$('#'+p+'w').value,h=+$('#'+p+'h').value,q=+$('#'+p+'q').value||1;
   if(u=='pc'&&w>0&&h>0)bx.innerHTML=`พื้นที่รวม <b>${(w/100*h/100*q).toFixed(2)} ตร.ม.</b> (${w}×${h} ซม. × ${q} ชิ้น) <button type="button" class="btn sm" onclick="toSqm('${p}')">คิดเป็น ตร.ม.</button>`;
-  else if((u=='m'||u=='sqm')&&w>0&&h>0)bx.textContent=szOn(p)?`พื้นที่ ${(w/100*h/100*q).toFixed(2)} ตร.ม. (${w}×${h} ซม. × ${q}) · คิดราคาจากขนาด`:`ไม่คิดจากขนาด · คิดราคา × จำนวน ${q} ${u=='m'?'เมตร':'ตร.ม.'} ตรงๆ`;
+  else if((u=='m'||u=='sqm')&&w>0&&h>0)bx.textContent=szOn(p)?`ขนาด ${w}×${h} ซม. = ${(w/100*h/100).toFixed(2)} ตร.ม. · ใส่ในช่องจำนวนแล้ว (${u=='m'?'เมตร = ด้านยาว':'ตร.ม.'})`:`กรอกจำนวนเอง · คิดราคา × จำนวน ${q} ${u=='m'?'เมตร':'ตร.ม.'} ตรงๆ`;
   else bx.textContent=''}
 function toSqm(p){const w=+$('#'+p+'w').value,h=+$('#'+p+'h').value,q=+$('#'+p+'q').value||1;if(!(w>0&&h>0))return;
   $('#'+p+'q').value=+(w/100*h/100*q).toFixed(2);$('#'+p+'u').value='sqm';
   if(/^(f\d+|e)$/.test(p))fcalc(p);else if(p=='c')cc();else{unitUi('hw','hh','hu');areaUi('h')}}
 function priceOf(m,pr){const x=pr&&m.pp&&m.pp[pr];return x&&(x.sell||x.ws)?{sell:x.sell||m.sell,ws:x.ws||0,cost:x.cost||m.cost||0}:{sell:m.sell,ws:m.ws,cost:m.cost}}
-function quote(n,w,h,q,t,u,pr){u=uCode(u);const m0=mat(n);if(!m0)return{p:0,c:0};const m=priceOf(m0,pr);const a=(u=='m'||u=='sqm')?((w>0&&h>0)?(m0.pu=='pc'?q:m0.pu=='m'?(w/100)*q:(w/100)*(h/100)*q):q):m0.pu=='pc'?q:m0.pu=='m'?(w/100)*q:(w/100)*(h/100)*q;const r=t=='ws'&&m.ws?m.ws:m.sell;return{p:Math.round(a*(r||0)),c:Math.round(a*(m.cost||0))}}
+function quote(n,w,h,q,t,u,pr){u=uCode(u);const m0=mat(n);if(!m0)return{p:0,c:0};const m=priceOf(m0,pr);const a=(u=='m'||u=='sqm')?q:m0.pu=='pc'?q:m0.pu=='m'?(w/100)*q:(w/100)*(h/100)*q;const r=t=='ws'&&m.ws?m.ws:m.sell;return{p:Math.round(a*(r||0)),c:Math.round(a*(m.cost||0))}}
 const ptOpts=sel=>`<option value="">ราคาหน้าร้าน</option><option value="ws"${sel=='ws'?' selected':''}>ราคาส่ง (ร้านสติ๊กเกอร์)</option>`;
 const sumL=(kind,k)=>ledger.filter(e=>e.kind==kind&&mkey(e.date)==k).reduce((s,e)=>s+(+e.amt||0),0);
 const rest=o=>Math.max(0,(o.price||0)-(o.deposit||0));
@@ -477,7 +477,7 @@ function itemNums(){const l=[...document.querySelectorAll('#items .itm')];l.forE
 function addItem(){const p='f'+(window._fi=(window._fi||0)+1);$('#items').insertAdjacentHTML('beforeend',itemHtml(p));fcalc(p);itemNums();{const c=findCust(($('#fc')||{}).value||'');if(c&&c.ptype){const sl=document.getElementById(p+'pt');if(sl){sl.value=c.ptype;fcalc(p)}}}const e=$('#'+p+'j');if(window._fi>1&&e)e.focus()}
 function delItem(p){const e=document.querySelector('#items .itm[data-p="'+p+'"]');if(e)e.remove();itemNums()}
 function ftot(){const l=[...document.querySelectorAll('#items .itm')];const t=l.reduce((a,e)=>a+(+$('#'+e.dataset.p+'pr').value||0),0);const bx=$('#ftot');if(bx)bx.textContent=l.length>1?'รวม '+l.length+' รายการ ฿'+fmt(t):''}
-function fcalc(p){p=p||'f1';if(!$('#'+p+'m'))return;unitUi(p+'w',p+'h',p+'u');areaUi(p);$('#'+p+'pr').value=quote($('#'+p+'m').value,szOn(p)?+$('#'+p+'w').value:0,szOn(p)?+$('#'+p+'h').value:0,+$('#'+p+'q').value||1,$('#'+p+'pt').value,$('#'+p+'u').value,$('#'+p+'pn').value).p||'';ftot()}
+function fcalc(p){p=p||'f1';if(!$('#'+p+'m'))return;unitUi(p+'w',p+'h',p+'u');areaUi(p);$('#'+p+'pr').value=quote($('#'+p+'m').value,+$('#'+p+'w').value,+$('#'+p+'h').value,+$('#'+p+'q').value||1,$('#'+p+'pt').value,$('#'+p+'u').value,$('#'+p+'pn').value).p||'';ftot()}
 async function saveOrder(){const g=i=>$('#'+i).value;if(!g('fc').trim()){$('#fc').focus();$('#fe').textContent='กรอกชื่อลูกค้าก่อน';return}
   const ym=yymm(),pre='JB-'+ym+'-';let n=orders.filter(o=>String(o.no||'').startsWith(pre)).length+1;while(orders.some(o=>o.no==pre+String(n).padStart(3,'0')))n++;
   const cust=g('fc').trim();let its=[...document.querySelectorAll('#items .itm')].map(e=>{const p=e.dataset.p;return{job:g(p+'j').trim(),mat:g(p+'m'),ptype:g(p+'pt'),printer:g(p+'pn'),unit:uCode(g(p+'u')),ulabel:uLab(p+'u'),w:+g(p+'w')||0,h:+g(p+'h')||0,qty:+g(p+'q')||1,price:+g(p+'pr')||0}});
@@ -534,7 +534,7 @@ function addLine(){df.items.push({d:'',q:1,u:0});setModalDoc()}
 function delLine(i){df.items.splice(i,1);if(!df.items.length)df.items.push({d:'',q:1,u:0});setModalDoc()}
 function addFromMat(){const n=$('#hm').value,u0=$('#hu').value,u=uCode(u0),w=+$('#hw').value,h=+$('#hh').value,q=+$('#hq').value||1,t=$('#hpt').value;
   if(!n||(u=='pc'&&(!w||!h))){(w?$('#hh'):$('#hw')).focus();return}
-  const on=szOn('h'),r=quote(n,on?w:0,on?h:0,q,t,u),sz=(u!='pc'&&on&&w>0&&h>0)?' '+w+'×'+h+' ซม.':'',it={d:n+sz+(t=='ws'?' (ราคาส่ง)':''),q,u:Math.round(r.p/q),n:u0=='x'?(uLab('hu')||''):u=='pc'?'':UL[u]};
+  const on=szOn('h'),r=quote(n,w,h,q,t,u),sz=(u!='pc'&&on&&w>0&&h>0)?' '+w+'×'+h+' ซม.':'',it={d:n+sz+(t=='ws'?' (ราคาส่ง)':''),q,u:Math.round(r.p/q),n:u0=='x'?(uLab('hu')||''):u=='pc'?'':UL[u]};
   if(df.items.length==1&&!df.items[0].d&&!df.items[0].u)df.items[0]=it;else df.items.push(it);setModalDoc()}
 const logoCtl=hd=>role=='owner'?`<div class="row" style="align-items:center;gap:8px"><span class="mut">โลโก้หัวบิล</span><label class="btn sm" style="flex:none;min-width:0;flex-direction:row;color:var(--tx);font-size:14px;cursor:pointer">เปลี่ยนโลโก้<input type="file" accept="image/*" style="display:none" onchange="logoPick(this,'${hd}')"></label><button type="button" class="btn sm" onclick="logoSave('${hd}',{logo:''})">ใช้ชื่อร้านแทนโลโก้</button><select aria-label="ขนาดโลโก้" style="width:auto;min-height:38px" onchange="logoSave('${hd}',{logoSize:this.value})">${[['s','โลโก้เล็ก'],['m','โลโก้กลาง'],['l','โลโก้ใหญ่']].map(x=>`<option value="${x[0]}"${(shop(hd).logoSize||'m')==x[0]?' selected':''}>${x[1]}</option>`).join('')}</select></div>`:'';
 function logoPick(inp,hd){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,520/im.width),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);let u=c.toDataURL('image/png');if(u.length>700000)u=c.toDataURL('image/jpeg',.85);logoSave(hd,{logo:u})};im.onerror=()=>{};im.src=r.result};r.readAsDataURL(f)}
@@ -841,7 +841,7 @@ async function saveCreditPay(i){const r=window._cr[i],a=+$('#ca1').value;if(!r)r
   catch(e){$('#cpe').textContent='บันทึกไม่สำเร็จ บางงานอาจถูกตัดยอดไปแล้ว ตรวจสอบหน้างานก่อนลองใหม่'}}
 /* ---------- calc ---------- */
 function calcV(){return `<div class="calcg"><div class="calcl"><button type="button" class="btn prbtn2" onclick="openPrices()">${svg('coins',20)}ราคางานสติ๊กเกอร์</button><div class="panel" style="display:flex;flex-direction:column;gap:12px"><div class="row"><label>วัสดุ<select id="cm" onchange="cc()">${matOpts()}</select></label><label>ประเภทราคา<select id="ct" onchange="cc()">${ptOpts()}</select></label><label>เครื่องพิมพ์<select id="cpn" onchange="cc()">${printers().map(x=>`<option>${esc(x)}</option>`).join('')}</select></label></div><div class="row"><label>กว้าง (ซม.)<input id="cw" type="number" inputmode="decimal" oninput="cc()"></label><label>สูง (ซม.)<input id="ch" type="number" inputmode="decimal" oninput="cc()"></label><label>จำนวน<input id="cq" type="number" inputmode="decimal" value="1" oninput="cc()"></label><label>หน่วย<select id="cu" onchange="cc()">${uOpts()}</select>${uBox('cu')}</label></div>${szChk('c','cc()')}<div class="mut" id="carea"></div>${cfg.materials.length?'':'<p class="mut">เจ้าของร้านต้องเพิ่มวัสดุและราคาในหน้าตั้งค่าก่อน</p>'}</div><div class="res"><span>ราคาประเมิน</span><b id="cr">0 บาท</b><span id="cx"></span></div></div><div class="calcr">${nestPanel()}</div></div>`}
-function cc(){unitUi('cw','ch','cu');areaUi('c');const q=quote($('#cm').value,szOn('c')?+$('#cw').value:0,szOn('c')?+$('#ch').value:0,+$('#cq').value||1,$('#ct').value,$('#cu').value,$('#cpn').value);$('#cr').textContent=fmt(q.p)+' บาท';$('#cx').textContent=role=='owner'?`ต้นทุนวัสดุ ${fmt(q.c)} · กำไร ${fmt(q.p-q.c)}`:''}
+function cc(){unitUi('cw','ch','cu');areaUi('c');const q=quote($('#cm').value,+$('#cw').value,+$('#ch').value,+$('#cq').value||1,$('#ct').value,$('#cu').value,$('#cpn').value);$('#cr').textContent=fmt(q.p)+' บาท';$('#cx').textContent=role=='owner'?`ต้นทุนวัสดุ ${fmt(q.c)} · กำไร ${fmt(q.p-q.c)}`:''}
 
 /* ---------- nesting calculator (pieces per sheet) ---------- */
 const NP={A4:[21,29.7],A3:[29.7,42],'A3+':[32.9,48.3]};
@@ -916,7 +916,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111r';
+const BUILD='20261111s';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
