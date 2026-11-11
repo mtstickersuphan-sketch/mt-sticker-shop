@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.5)</title>
+<title>MT STICKER (ตัวอย่าง 0.5.1)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -202,8 +202,9 @@ table.t.docs{min-width:0}
 .hero .prbtn{align-self:flex-start;margin-top:6px;display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 24px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.35)}.hero .prbtn:active{transform:scale(.97)}@media(min-width:700px){.hero .prbtn{position:absolute;right:24px;top:50%;transform:translateY(-50%);margin:0;font-size:19px;padding:16px 30px}.hero .prbtn:active{transform:translateY(-50%) scale(.97)}}.prp{padding:0}
 .prt tbody tr{transition:background .12s}.prt tbody tr:hover td{background:rgba(255,255,255,.10)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.25)}.prt tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 #F59E0B,inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.25)}.prt td.hc{background:rgba(255,255,255,.07)}.prt tbody tr:hover td.c1{background:rgba(245,158,11,.38)!important;color:#fff}.prt tbody tr:hover td.c2{background:rgba(34,197,94,.38)!important;color:#fff}.prt td.c1.hc{background:rgba(245,158,11,.22)}.prt td.c2.hc{background:rgba(34,197,94,.22)}
 .pmtag{display:inline-block;margin-top:4px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600}.pmtag.cash{background:rgba(245,158,11,.18);color:#FBBF24}.pmtag.transfer{background:rgba(59,130,246,.2);color:#7DB3FF}
+.nthd{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;grid-template-areas:'t c' 's c';gap:4px 12px;width:100%;cursor:pointer;color:#fff;align-items:center}.nthd .nttl{grid-area:t;font-size:18px;font-weight:700;display:flex;align-items:center}.nthd .ntsum{grid-area:s;font-size:14px;color:#fff;opacity:.95}.nthd .ntsum b{background:#fff;color:#B3121F;padding:1px 10px;border-radius:99px;font-weight:700}.nthd .ntchev{grid-area:c;font-size:22px;transition:transform .2s}.ntalert.open .ntchev{transform:rotate(180deg)}.ntalert .ntbody{display:none;margin-top:10px}.ntalert.open .ntbody{display:block}.nthd:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.5 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.5.1 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -406,6 +407,7 @@ function donutSvg(items,total){
   return `<svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="สัดส่วนงานตามวัสดุ"><circle cx="70" cy="70" r="${R}" fill="none" stroke="#1F2B40" stroke-width="18"/>${rings}<text x="70" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="#EAF0FA">${total}</text><text x="70" y="88" text-anchor="middle" font-size="12" fill="#93A2BA">งานทั้งหมด</text></svg>`;
 }
 /* ---------- home ---------- */
+function ntTog(b){const p=b.parentNode;p.classList.toggle('open');window._ntOpen=p.classList.contains('open')}
 function homeV(){
   const owner=role=='owner',k=today().slice(0,7),act=orders.filter(o=>o.status!='ส่งมอบแล้ว');
   const late=orders.filter(isLate).length,ready=orders.filter(o=>o.status=='พร้อมส่ง').length;
@@ -425,7 +427,9 @@ function homeV(){
   orders.filter(o=>o.status=='พร้อมส่ง').forEach(o=>nts.push(['box','var(--green)','พร้อมส่งมอบ: '+o.customer,rest(o)?'ยังค้างชำระ ฿'+fmt(rest(o)):'ชำระครบแล้ว','พร้อมส่ง',o.customer]));
   orders.filter(o=>o.status=='รออนุมัติแบบ').forEach(o=>nts.push(['pen','var(--orange)','รอลูกค้าอนุมัติแบบ: '+o.customer,o.job,'รออนุมัติแบบ',o.customer]));
   orders.filter(o=>o.status=='ส่งมอบแล้ว'&&rest(o)>0).forEach(o=>nts.push(['cash','var(--blue)','ส่งมอบแล้วแต่ค้างชำระ: '+o.customer,'฿'+fmt(rest(o)),'ส่งมอบแล้ว',o.customer]));
-  const ntv=`<div class="panel${nts.length?' ntalert':''}"><h2>${nts.length?'🔔 ':''}เรื่องที่ต้องตาม${nts.length?'<span class="ntcount">'+nts.length+'</span>':''}</h2><div class="nt">${nts.slice(0,6).map(n=>`<button type="button" class="ntb" data-f="${esc(n[4]||'all')}" data-c="${esc(n[5]||'')}" onclick="goOrd(this.dataset.f,this.dataset.c)"><span class="ico" style="--c:${n[1]}">${svg(n[0],18)}</span><span>${esc(n[2])}<small>${esc(n[3])}</small></span></button>`).join('')||'<p class="mut">ไม่มีเรื่องที่ต้องตามตอนนี้</p>'}</div></div>`;
+  const nOwe=orders.filter(o=>rest(o)>0),owedAll=nOwe.reduce((t,o)=>t+rest(o),0),nLate=orders.filter(isLate).length;
+  const ntItems=nts.slice(0,12).map(n=>`<button type="button" class="ntb" data-f="${esc(n[4]||'all')}" data-c="${esc(n[5]||'')}" onclick="goOrd(this.dataset.f,this.dataset.c)"><span class="ico" style="--c:${n[1]}">${svg(n[0],18)}</span><span>${esc(n[2])}<small>${esc(n[3])}</small></span></button>`).join('');
+  const ntv=nts.length?`<div class="panel ntalert${window._ntOpen?' open':''}"><button type="button" class="nthd" onclick="ntTog(this)"><span class="nttl">🔔 เรื่องที่ต้องตาม<span class="ntcount">${nts.length}</span></span><span class="ntsum">${owedAll>0?'<b>⚠ มียอดค้างชำระ ฿'+fmt(owedAll)+'</b> · '+nOwe.length+' งาน':'ไม่มียอดค้างชำระ'}${nLate?' · เลยกำหนดส่ง '+nLate+' งาน':''}</span><span class="ntchev">▾</span></button><div class="nt ntbody">${ntItems}</div></div>`:`<div class="panel"><h2>เรื่องที่ต้องตาม</h2><div class="nt"><p class="mut">ไม่มีเรื่องที่ต้องตามตอนนี้</p></div></div>`;
   const rec=orders.slice().sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,6);
   const tbl=`<div class="panel"><h2>งานล่าสุด<button class="btn sm" onclick="go('orders')">ดูทั้งหมด</button></h2><div class="tw"><table class="t"><thead><tr><th>เลขที่</th><th>ลูกค้า</th><th>งาน</th><th class="num">ราคา</th><th>สถานะ</th><th>ส่ง</th></tr></thead><tbody>${rec.map(o=>`<tr><td>${esc(o.no||'#'+o.id.slice(0,4))}</td><td>${esc(o.customer)}</td><td>${esc(o.job)}</td><td class="num">${fmt(o.price)}</td><td><span class="badge" style="--c:${STC[Math.max(0,ST.indexOf(o.status))]}">${esc(o.status)}</span></td><td>${dshort(o.due)}${isLate(o)?' <span class="late">เลย</span>':''}</td></tr>`).join('')||'<tr><td colspan="6" class="mut">ยังไม่มีงาน</td></tr>'}</tbody></table></div></div>`;
   const s=shop();
@@ -904,7 +908,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111f';
+const BUILD='20261111g';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
