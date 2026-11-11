@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.6.3)</title>
+<title>MT STICKER (ตัวอย่าง 0.6.4)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -208,7 +208,7 @@ table.t.docs{min-width:0}
 .tile .tl{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.2px;margin-bottom:1px}.tile.on .tl{color:#fff}@media(max-width:700px){.tile .tl{font-size:14px}}
 .prbtn2{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 20px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.3)}.prbtn2:active{transform:scale(.98)}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.6.3 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.6.4 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -373,18 +373,16 @@ const mat=n=>cfg.materials.find(m=>m.n==n);
 const matOpts=sel=>cfg.materials.slice().sort((a,b)=>(b.n=='-')-(a.n=='-')).map(m=>`<option${sel==m.n?' selected':''}>${esc(m.n)}</option>`).join('');
 const UL={pc:'ชิ้น',sqm:'ตร.ม.',m:'เมตร'};
 const uOpts=sel=>[['m','เมตร'],['sqm','ตร.ม.'],['pc','ชิ้น'],['x','อื่นๆ (พิมพ์เอง)']].map(x=>`<option value="${x[0]}"${(sel||'pc')==x[0]?' selected':''}>${x[1]}</option>`).join('');
+function szTog(p){const c=$('#'+p+'k'),u=$('#'+p+'u');if(c&&u&&c.checked&&uCode(u.value)=='pc')u.value='sqm'}
 const szOn=p=>{const k=$('#'+p+'k');return !k||k.checked};
-const szChk=(p,fn)=>`<label class="chk" id="${p}kL" style="display:none"><input type="checkbox" id="${p}k" checked onchange="${fn}">ใส่พื้นที่จากขนาดลงในช่องจำนวนให้อัตโนมัติ (เอาติ๊กออก = กรอกจำนวนเอง)</label>`;
+const szChk=(p,fn)=>`<label class="chk" id="${p}kL" style="display:none"><input type="checkbox" id="${p}k" onchange="szTog('${p}');${fn}">คิดเป็นตารางเมตร</label>`;
 const uBox=(id,v)=>`<span class="uw" style="display:${v?'flex':'none'};gap:6px"><input id="${id}t" class="utx" placeholder="พิมพ์หน่วย เช่น ชุด แผ่น ใบ" value="${esc(v||'')}" style="min-width:0;flex:1"><button type="button" class="btn sm" title="เลือกจากรายการ" onclick="uBack('${id}')">▾</button></span>`;
 function uBack(id){const e=$('#'+id);e.value='pc';e.dispatchEvent(new Event('change'))}
 const uCode=v=>v=='x'?'pc':v;
 const uLab=id=>($('#'+id).value=='x'?(($('#'+id+'t')||{}).value||'').trim():'');
-function unitUi(w,h,u){const v0=$('#'+u).value,v=uCode(v0),a=$('#'+w),b=$('#'+h);const tb=$('#'+u+'t');const sl=$('#'+u);if(tb){const wr=tb.parentNode,was=wr.style.display=='flex';wr.style.display=v0=='x'?'flex':'none';sl.style.display=v0=='x'?'none':'';if(v0=='x'&&!was)tb.focus()}if(!a||!b)return;b.disabled=false;a.disabled=false;a.style.opacity=1;b.style.opacity=1;const ph=v=='pc'?'':'ไม่ใส่ก็ได้';a.placeholder=ph;b.placeholder=ph;const pf=w.slice(0,-1),kl=$('#'+pf+'kL'),qi=$('#'+pf+'q'),ok=v!='pc'&&+a.value>0&&+b.value>0;if(kl)kl.style.display=ok?'flex':'none';if(qi){const auto=ok&&szOn(pf);qi.readOnly=auto;qi.style.opacity=auto?.75:1;if(auto){const A=+a.value,B=+b.value;qi.value=+(v=='sqm'?A*B/10000:Math.max(A,B)/100).toFixed(2)}}}
+function unitUi(w,h,u){const v0=$('#'+u).value,v=uCode(v0),a=$('#'+w),b=$('#'+h);const tb=$('#'+u+'t');const sl=$('#'+u);if(tb){const wr=tb.parentNode,was=wr.style.display=='flex';wr.style.display=v0=='x'?'flex':'none';sl.style.display=v0=='x'?'none':'';if(v0=='x'&&!was)tb.focus()}if(!a||!b)return;b.disabled=false;a.disabled=false;a.style.opacity=1;b.style.opacity=1;const ph=v=='pc'?'':'ไม่ใส่ก็ได้';a.placeholder=ph;b.placeholder=ph;const pf=w.slice(0,-1),kl=$('#'+pf+'kL'),qi=$('#'+pf+'q'),kc=$('#'+pf+'k'),ok=+a.value>0&&+b.value>0;if(kc){if(v=='pc')kc.checked=false;else if(kc.dataset.pv=='pc')kc.checked=true;kc.dataset.pv=v}if(kl)kl.style.display=ok?'flex':'none';if(qi){const auto=ok&&v!='pc'&&szOn(pf);qi.readOnly=auto;qi.style.opacity=auto?.75:1;if(auto){const A=+a.value,B=+b.value;qi.value=+(v=='sqm'?A*B/10000:Math.max(A,B)/100).toFixed(2)}}}
 const ordSize=o=>(o.unit=='sqm'?(o.w&&o.h?o.w+'×'+o.h+' ซม.':''):o.unit=='m'?(o.w?'กว้าง '+o.w+' ซม.':''):(o.w&&o.h?o.w+'×'+o.h+' ซม.':''));
-function areaUi(p){const bx=$('#'+p+'area');if(!bx)return;const u=uCode($('#'+p+'u').value),w=+$('#'+p+'w').value,h=+$('#'+p+'h').value,q=+$('#'+p+'q').value||1;
-  if(u=='pc'&&w>0&&h>0)bx.innerHTML=`พื้นที่รวม <b>${(w/100*h/100*q).toFixed(2)} ตร.ม.</b> (${w}×${h} ซม. × ${q} ชิ้น) <button type="button" class="btn sm" onclick="toSqm('${p}')">คิดเป็น ตร.ม.</button>`;
-  else if((u=='m'||u=='sqm')&&w>0&&h>0)bx.textContent=szOn(p)?`ขนาด ${w}×${h} ซม. = ${(w/100*h/100).toFixed(2)} ตร.ม. · ใส่ในช่องจำนวนแล้ว (${u=='m'?'เมตร = ด้านยาว':'ตร.ม.'})`:`กรอกจำนวนเอง · คิดราคา × จำนวน ${q} ${u=='m'?'เมตร':'ตร.ม.'} ตรงๆ`;
-  else bx.textContent=''}
+function areaUi(p){const bx=$('#'+p+'area');if(bx)bx.textContent=''}
 function toSqm(p){const w=+$('#'+p+'w').value,h=+$('#'+p+'h').value,q=+$('#'+p+'q').value||1;if(!(w>0&&h>0))return;
   $('#'+p+'q').value=+(w/100*h/100*q).toFixed(2);$('#'+p+'u').value='sqm';
   if(/^(f\d+|e)$/.test(p))fcalc(p);else if(p=='c')cc();else{unitUi('hw','hh','hu');areaUi('h')}}
@@ -916,7 +914,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111s';
+const BUILD='20261111u';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
