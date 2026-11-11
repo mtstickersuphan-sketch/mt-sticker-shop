@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.4.1)</title>
+<title>MT STICKER (ตัวอย่าง 0.5)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -201,8 +201,9 @@ table.t.docs{min-width:0}
 /* price list */.prp{padding:12px 14px}.prp h2{margin:0 0 8px;font-size:16px}.prt{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;overflow:hidden;border-radius:10px;border:1px solid var(--line,#2a3140)}.prt th,.prt td{padding:5px 10px;line-height:1.3}.prt th{font-size:12px;font-weight:600;text-align:right}.prt th:first-child{text-align:left;color:var(--mut,#8b95a7);background:rgba(255,255,255,.04)}.prt td{border-top:1px solid var(--line,#2a3140);text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.prt td:first-child{text-align:left;font-weight:500}.prt small{color:var(--mut,#8b95a7);font-weight:400;font-size:11px}.prt .c1{background:rgba(245,158,11,.12);color:#FBBF24;width:84px}.prt th.c1{background:#B45309;color:#fff}.prt .c2{background:rgba(34,197,94,.12);color:#4ADE80;width:84px}.prt th.c2{background:#15803D;color:#fff}@media(max-width:480px){.prt th,.prt td{padding:4px 8px}.prt .c1,.prt .c2{width:68px}}
 .hero .prbtn{align-self:flex-start;margin-top:6px;display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 24px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.35)}.hero .prbtn:active{transform:scale(.97)}@media(min-width:700px){.hero .prbtn{position:absolute;right:24px;top:50%;transform:translateY(-50%);margin:0;font-size:19px;padding:16px 30px}.hero .prbtn:active{transform:translateY(-50%) scale(.97)}}.prp{padding:0}
 .prt tbody tr{transition:background .12s}.prt tbody tr:hover td{background:rgba(255,255,255,.10)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.25)}.prt tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 #F59E0B,inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.25)}.prt td.hc{background:rgba(255,255,255,.07)}.prt tbody tr:hover td.c1{background:rgba(245,158,11,.38)!important;color:#fff}.prt tbody tr:hover td.c2{background:rgba(34,197,94,.38)!important;color:#fff}.prt td.c1.hc{background:rgba(245,158,11,.22)}.prt td.c2.hc{background:rgba(34,197,94,.22)}
+.pmtag{display:inline-block;margin-top:4px;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600}.pmtag.cash{background:rgba(245,158,11,.18);color:#FBBF24}.pmtag.transfer{background:rgba(59,130,246,.2);color:#7DB3FF}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.4.1 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.5 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -682,10 +683,11 @@ async function copyDoc(id,b){const d=docs.find(x=>x.id==id);if(!d)return;const s
 function convDoc(id,type){const d=docs.find(x=>x.id==id);if(!d)return;df={type,head:d.head||'shop',date:today(),customer:d.customer,phone:d.phone||'',addr:d.addr||'',tax:d.tax||'',items:d.items.map(x=>({...x})),disc:d.disc||0,vat:!!d.vat,paid:type=='receipt'?calcDoc(d).total:(d.paid||0),note:DNOTE[type],orderId:d.orderId||''};setModal(docFormHtml());updTot()}
 function delDoc(id,b){if(b.dataset.s){db.doc('docs/'+id).delete().then(closeModal).catch(()=>{})}else{b.dataset.s=1;b.textContent='กดอีกครั้งเพื่อลบ'}}
 /* ---------- ledger ---------- */
+const payTxt=e=>e.method=='transfer'?'โอน'+(e.bank?' · '+e.bank:''):e.method=='cash'?'เงินสด':'';
 function ledgerV(){
   const inn=sumL('in',lm),out=sumL('out',lm),lk=window._lk||'all',l=ledger.filter(e=>mkey(e.date)==lm&&(lk=='all'||e.kind==lk)).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
   const kp=(c,ic,t,v)=>`<div class="kpi"><div class="ico" style="--c:${c}">${svg(ic,24)}</div><div><span>${t}</span><b>${v}</b></div></div>`;
-  let cur='',rows='';l.forEach(e=>{if(e.date!=cur){cur=e.date;rows+=`<div class="day">${dth(e.date)}</div>`}rows+=`<div class="ent"><div class="nm"><b style="font-variant-numeric:normal">${esc(e.cat)}</b><div class="mut">${esc(e.note)}</div></div><b class="${e.kind=='in'?'in':'out'}">${e.kind=='in'?'+':'-'}${fmt(e.amt)}</b><button class="icb sm" aria-label="ลบรายการ" onclick="delEnt('${e.id}',this)">${svg('trash',16)}</button></div>`});
+  let cur='',rows='';l.forEach(e=>{if(e.date!=cur){cur=e.date;rows+=`<div class="day">${dth(e.date)}</div>`}rows+=`<div class="ent"><div class="nm"><b style="font-variant-numeric:normal">${esc(e.cat)}</b><div class="mut">${esc(e.note)}</div>${e.method?`<span class="pmtag ${e.method}">${esc(payTxt(e))}</span>`:''}</div><b class="${e.kind=='in'?'in':'out'}">${e.kind=='in'?'+':'-'}${fmt(e.amt)}</b><button class="icb sm" aria-label="ลบรายการ" onclick="delEnt('${e.id}',this)">${svg('trash',16)}</button></div>`});
   return `<div class="bar"><button class="icb" onclick="chgMonth(-1)" aria-label="เดือนก่อน">‹</button><b style="min-width:150px;text-align:center">${mlabel(lm)}</b><button class="icb" onclick="chgMonth(1)" aria-label="เดือนถัดไป">›</button><span style="flex:1"></span><button class="btn red" onclick="openEnt()">${svg('plus',20)}บันทึกรายการ</button></div><div class="chips" style="padding:0">${[['all','ทั้งหมด'],['in','รายรับ'],['out','รายจ่าย']].map(x=>`<button class="chipb${lk==x[0]?' on':''}" onclick="window._lk='${x[0]}';render(true)">${x[1]}</button>`).join('')}</div><div class="bar"><button class="btn sm" onclick="expXlsx(0)">${svg('down',16)}Excel เดือนนี้</button><button class="btn sm" onclick="expPdf()">${svg('down',16)}PDF เดือนนี้</button><button class="btn sm" onclick="expXlsx(1)">${svg('down',16)}Excel ทั้งปี (แยกชีตตามเดือน)</button><span id="exs" class="mut"></span></div><div class="kpis">${kp('var(--green)','up','รายรับ','฿'+fmt(inn))}${kp('var(--red)','down','รายจ่าย','฿'+fmt(out))}${kp('var(--orange)','coins','กำไร (รับ - จ่าย)','฿'+fmt(inn-out))}</div><div class="panel">${rows||'<p class="mut">ยังไม่มีรายการในเดือนนี้ กด "บันทึกรายการ" หรือกด "รับเงิน" ที่การ์ดงาน</p>'}</div>`;
 }
 /* ---------- export (Excel / PDF) ---------- */
@@ -712,12 +714,12 @@ async function expXlsx(year){
     t.eachCell(c=>{c.fill=tf;c.font={bold:true};c.border=bd});[2,3,4].forEach(n=>t.getCell(n).numFmt=NF);
     wb.worksheets.unshift(wb.worksheets.pop());wb.worksheets.forEach((w,k)=>w.orderNo=k)}
   months.forEach(m=>{const es=monthEnts(m),ws=wb.addWorksheet(mlabel(m));
-    ws.columns=[{width:16},{width:12},{width:18},{width:42},{width:16},{width:16}];
+    ws.columns=[{width:16},{width:12},{width:18},{width:42},{width:16},{width:16},{width:24}];
     ws.mergeCells('A1:F1');ws.getCell('A1').value=sh.name+' · รายรับ-รายจ่าย '+mlabel(m);ws.getCell('A1').font={bold:true,size:14};
-    const h=ws.getRow(3);h.values=['วันที่','ประเภท','หมวด','รายละเอียด','รายรับ (บาท)','รายจ่าย (บาท)'];
+    const h=ws.getRow(3);h.values=['วันที่','ประเภท','หมวด','รายละเอียด','รายรับ (บาท)','รายจ่าย (บาท)','เงินสด/โอน'];
     h.eachCell(c=>{c.fill=hf;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.alignment={horizontal:'center',vertical:'middle'};c.border=bd});
     let r=4,i=0,o=0;es.forEach(e=>{const a=+e.amt||0,isIn=e.kind=='in';isIn?i+=a:o+=a;
-      const row=ws.getRow(r++);row.values=[dth(e.date),isIn?'รายรับ':'รายจ่าย',e.cat||'',e.note||'',isIn?a:null,isIn?null:a];
+      const row=ws.getRow(r++);row.values=[dth(e.date),isIn?'รายรับ':'รายจ่าย',e.cat||'',e.note||'',isIn?a:null,isIn?null:a,payTxt(e)];
       row.eachCell({includeEmpty:true},(c,n)=>{c.border=bd;if(n>=5){c.numFmt=NF}});row.getCell(6).font={color:{argb:'FFC62828'}};row.getCell(5).font={color:{argb:'FF1B8F4C'}}});
     const f=4,l=Math.max(f,r-1),t=ws.getRow(r);t.values=['รวม','','','',{formula:'SUM(E'+f+':E'+l+')',result:i},{formula:'SUM(F'+f+':F'+l+')',result:o}];
     t.eachCell({includeEmpty:true},(c,n)=>{c.fill=tf;c.font={bold:true};c.border=bd;if(n>=5)c.numFmt=NF});
@@ -733,7 +735,7 @@ async function expPdf(){
   const css='<style>.rp{width:794px;height:1123px;box-sizing:border-box;padding:48px 48px 36px;background:#fff;color:#1b2430;font-family:Anuphan,"Noto Sans Thai",Tahoma,sans-serif;font-size:14px;line-height:1.4;position:relative}.rp h1{margin:0;font-size:26px}.rp .sub{color:#6b7686;margin-top:2px}.rp .sm{display:flex;gap:12px;margin:18px 0}.rp .sm div{flex:1;border-radius:12px;padding:12px 14px;background:#eef3f9}.rp .sm span{display:block;color:#6b7686;font-size:13px}.rp .sm b{font-size:20px}.rp table{width:100%;border-collapse:collapse;font-size:13px}.rp th{background:#3a4552;color:#fff;padding:7px 8px;text-align:left}.rp td{padding:6px 8px;border-bottom:1px solid #e1e6ee;vertical-align:top}.rp .r{text-align:right;white-space:nowrap}.rp .gi{color:#1b8f4c}.rp .ro{color:#c62828}.rp .tot td{font-weight:700;background:#cfe3fa;border:0}.rp .pg{position:absolute;bottom:20px;right:48px;color:#8a95a5;font-size:12px}</style>';
   const head=(first)=>first?`<h1>${esc(sh.name)}</h1><div class="sub">สรุปรายรับ-รายจ่าย ${mlabel(lm)}</div><div class="sm"><div><span>รายรับ</span><b class="gi">฿${F(inn)}</b></div><div><span>รายจ่าย</span><b class="ro">฿${F(out)}</b></div><div><span>กำไร (รับ - จ่าย)</span><b>฿${F(inn-out)}</b></div></div>`:`<div class="sub" style="margin-bottom:14px">${esc(sh.name)} · รายรับ-รายจ่าย ${mlabel(lm)} (ต่อ)</div>`;
   const wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:0;top:0;z-index:-9999;pointer-events:none';
-  wrap.innerHTML=css+pages.map((pg,i)=>`<div class="rp">${head(i==0)}<table><thead><tr><th style="width:15%">วันที่</th><th style="width:16%">หมวด</th><th>รายละเอียด</th><th class="r" style="width:15%">รายรับ</th><th class="r" style="width:15%">รายจ่าย</th></tr></thead><tbody>${pg.map(e=>`<tr><td>${dshort(e.date)}</td><td>${esc(e.cat)}</td><td>${esc(e.note)}</td><td class="r gi">${e.kind=='in'?F(e.amt):''}</td><td class="r ro">${e.kind=='in'?'':F(e.amt)}</td></tr>`).join('')}${i==pages.length-1?`<tr class="tot"><td colspan="3">รวม</td><td class="r">${F(inn)}</td><td class="r">${F(out)}</td></tr>`:''}</tbody></table><div class="pg">หน้า ${i+1}/${pages.length}</div></div>`).join('');
+  wrap.innerHTML=css+pages.map((pg,i)=>`<div class="rp">${head(i==0)}<table><thead><tr><th style="width:15%">วันที่</th><th style="width:16%">หมวด</th><th>รายละเอียด</th><th class="r" style="width:15%">รายรับ</th><th class="r" style="width:15%">รายจ่าย</th></tr></thead><tbody>${pg.map(e=>`<tr><td>${dshort(e.date)}</td><td>${esc(e.cat)}</td><td>${esc(e.note)}${e.method?` <span style="color:#6b7686;font-size:11px">[${esc(payTxt(e))}]</span>`:''}</td><td class="r gi">${e.kind=='in'?F(e.amt):''}</td><td class="r ro">${e.kind=='in'?'':F(e.amt)}</td></tr>`).join('')}${i==pages.length-1?`<tr class="tot"><td colspan="3">รวม</td><td class="r">${F(inn)}</td><td class="r">${F(out)}</td></tr>`:''}</tbody></table><div class="pg">หน้า ${i+1}/${pages.length}</div></div>`).join('');
   document.body.appendChild(wrap);
   try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     const {jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4');
@@ -743,12 +745,12 @@ async function expPdf(){
   catch(e){wrap.remove();exMsg('สร้างไฟล์ PDF ไม่สำเร็จ ลองใหม่อีกครั้ง')}}
 function chgMonth(n){const p=lm.split('-'),d=new Date(+p[0],+p[1]-1+n,1);lm=d.getFullYear()+'-'+pad(d.getMonth()+1);render(true)}
 function delEnt(id,b){if(b.dataset.s){db.doc('ledger/'+id).delete().catch(()=>{})}else{b.dataset.s=1;b.style.color='#FF8A94';b.setAttribute('aria-label','กดอีกครั้งเพื่อลบ')}}
-function openEnt(){openModal(`<h2>บันทึกรายการ</h2><div class="row"><label>ประเภท<select id="lk" onchange="entCats()"><option value="in">รายรับ</option><option value="out">รายจ่าย</option></select></label><label>หมวด<select id="lc" onchange="catOther()"></select><span id="lcw" style="display:none;gap:6px"><input id="lct" placeholder="พิมพ์ระบุเอง เช่น ค่าซ่อมเครื่อง" style="min-width:0;flex:1"><button type="button" class="btn sm" title="เลือกจากรายการ" onclick="catBack()">▾</button></span></label></div><div class="row"><label>จำนวนเงิน (บาท)<input id="la" type="number" inputmode="decimal"></label><label>วันที่<input id="ld" type="date" value="${today()}"></label></div><label>รายละเอียด<input id="ln" placeholder="เช่น ซื้อไวนิล 1 ม้วน"></label><span id="le" class="err"></span><div class="row"><button class="btn red" onclick="saveEnt()">บันทึก</button><button class="btn" onclick="closeModal()">ยกเลิก</button></div>`);entCats();$('#la').focus()}
-function entCats(){$('#lc').innerHTML=($('#lk').value=='in'?CIN:COUT).map(c=>`<option>${c}</option>`).join('');catOther()}
+function openEnt(){openModal(`<h2>บันทึกรายการ</h2><div class="row"><label>ประเภท<select id="lk" onchange="entCats()"><option value="in">รายรับ</option><option value="out">รายจ่าย</option></select></label><label>หมวด<select id="lc" onchange="catOther()"></select><span id="lcw" style="display:none;gap:6px"><input id="lct" placeholder="พิมพ์ระบุเอง เช่น ค่าซ่อมเครื่อง" style="min-width:0;flex:1"><button type="button" class="btn sm" title="เลือกจากรายการ" onclick="catBack()">▾</button></span></label></div><div class="row"><label>จำนวนเงิน (บาท)<input id="la" type="number" inputmode="decimal"></label><label>วันที่<input id="ld" type="date" value="${today()}"></label></div>${payFld('l')}<label>รายละเอียด<input id="ln" placeholder="เช่น ซื้อไวนิล 1 ม้วน"></label><span id="le" class="err"></span><div class="row"><button class="btn red" onclick="saveEnt()">บันทึก</button><button class="btn" onclick="closeModal()">ยกเลิก</button></div>`);entCats();$('#la').focus()}
+function entCats(){const i=$('#lk').value=='in';$('#lc').innerHTML=(i?CIN:COUT).map(c=>`<option>${c}</option>`).join('');catOther();if($('#lpm')){$('#lpm').parentNode.firstChild.nodeValue=i?'วิธีรับเงิน':'วิธีจ่ายเงิน';$('#lbk').parentNode.firstChild.nodeValue=i?'โอนเข้าบัญชี':'โอนออกจากบัญชี'}}
 function catOther(){const o=$('#lc').value=='อื่นๆ',w=$('#lcw');w.style.display=o?'flex':'none';$('#lc').style.display=o?'none':'';if(o)$('#lct').focus()}
 function catBack(){$('#lc').selectedIndex=0;catOther()}
 async function saveEnt(){const a=+$('#la').value;if(!(a>0)){$('#le').textContent='ใส่จำนวนเงินมากกว่า 0';return}
-  try{await db.collection('ledger').add({date:$('#ld').value||today(),kind:$('#lk').value,cat:$('#lc').value=='อื่นๆ'?($('#lct').value.trim()||'อื่นๆ'):$('#lc').value,amt:a,note:$('#ln').value.trim(),created:Date.now()});closeModal()}catch(e){$('#le').textContent='บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'}}
+  try{await db.collection('ledger').add({date:$('#ld').value||today(),kind:$('#lk').value,cat:$('#lc').value=='อื่นๆ'?($('#lct').value.trim()||'อื่นๆ'):$('#lc').value,amt:a,note:$('#ln').value.trim(),method:$('#lpm').value,bank:$('#lpm').value=='transfer'?$('#lbk').value:'',created:Date.now()});closeModal()}catch(e){$('#le').textContent='บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'}}
 /* ---------- customers ---------- */
 const nkey=s=>String(s||'').trim().toLowerCase();
 function custAll(){const m={};
@@ -902,7 +904,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111e';
+const BUILD='20261111f';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
