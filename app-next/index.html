@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.6.4)</title>
+<title>MT STICKER (ตัวอย่าง 0.6.5)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -208,7 +208,7 @@ table.t.docs{min-width:0}
 .tile .tl{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.2px;margin-bottom:1px}.tile.on .tl{color:#fff}@media(max-width:700px){.tile .tl{font-size:14px}}
 .prbtn2{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 20px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.3)}.prbtn2:active{transform:scale(.98)}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.6.4 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.6.5 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -223,7 +223,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n||0).toLocaleString('th-TH');
 const pad=n=>String(n).padStart(2,'0');
-const ST=['รับงาน','ออกแบบ','รออนุมัติแบบ','ผลิต','พร้อมส่ง','ส่งมอบแล้ว'];
+const ST=['รับงาน','ออกแบบ','รอผลิต','ผลิต','พร้อมส่ง','ส่งมอบแล้ว'];
 const STC=['#93A2BA','#A78BFA','#F5A524','#4C8DFF','#2FD07A','#93A2BA'];
 const STI=['cart','pen','docs','print','box','truck'];
 const TM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -251,7 +251,7 @@ function stopData(){unsubs.forEach(f=>{try{f()}catch(e){}});unsubs=[];orders=[];
 function startData(){
   const bad=()=>{};
   unsubs.push(db.doc('settings/main').onSnapshot(s=>{cfg=Object.assign({materials:[],shop:{}},s.exists?s.data():{});render()},()=>{}));
-  unsubs.push(db.collection('orders').onSnapshot(s=>{orders=s.docs.map(d=>({id:d.id,...d.data()}));render()},bad));
+  unsubs.push(db.collection('orders').onSnapshot(s=>{orders=s.docs.map(d=>{const o={id:d.id,...d.data()};if(o.status=='รออนุมัติแบบ')o.status='รอผลิต';return o});render()},bad));
   if(role=='owner')unsubs.push(db.collection('ledger').onSnapshot(s=>{ledger=s.docs.map(d=>({id:d.id,...d.data()}));render()},bad));
   unsubs.push(db.collection('docs').onSnapshot(s=>{docs=s.docs.map(d=>({id:d.id,...d.data()}));render()},bad));
   unsubs.push(db.collection('customers').onSnapshot(s=>{custs=s.docs.map(d=>({id:d.id,...d.data()}));render()},bad));
@@ -449,7 +449,7 @@ function ordersV(){
   const base=orders.filter(o=>filter=='all'?o.status!='ส่งมอบแล้ว':o.status==filter).filter(o=>!t||[o.customer,o.job,o.phone,o.no,o.printer].join(' ').toLowerCase().includes(t)).sort((a,b)=>(a.due||'9').localeCompare(b.due||'9'));
   const list=base.filter(o=>!window._pf||o.printer==window._pf);
   const prC=printers().length?`<div class="chips" style="padding:0"><button class="chipb${window._pf?'':' on'}" onclick="window._pf='';render(true)">ทุกเครื่องพิมพ์ (${base.length})</button>${printers().map(x=>`<button class="chipb${window._pf==x?' on':''}" onclick="window._pf=this.dataset.p;render(true)" data-p="${esc(x)}">${svg('print',16)} ${esc(x)} (${base.filter(o=>o.printer==x).length})</button>`).join('')}</div>`:'';
-  const TI=['clip','pen','clock','print','box','truck'],TH=['ลูกค้าสั่งเข้ามา','ทำแบบ / แก้แบบ','รอลูกค้ายืนยันแบบ','กำลังผลิต','รอลูกค้ามารับ','จบงานแล้ว'];
+  const TI=['clip','pen','clock','print','box','truck'],TH=['ลูกค้าสั่งเข้ามา','ทำแบบ / แก้แบบ','รอเข้าคิวผลิต','กำลังผลิต','รอลูกค้ามารับ','จบงานแล้ว'];
   const tiles=[].concat(ST.map((s,k)=>[s,s,TI[k],TH[k],STC[k],k+1]));
   return `<div class="tiles">${tiles.map(p=>`<button class="tile${filter==p[0]?' on':''}" style="--c:${p[4]}" onclick="filter=filter=='${p[0]}'?'all':'${p[0]}';render(true)"><div class="ico">${svg(p[2],24)}</div><div><span class="tl">${p[1]}</span><b>${cnt(p[0])}</b><small>${p[3]}</small></div></button>`).join('')}</div>${prC}${t?`<div class="chips" style="padding:0"><button class="chipb on" onclick="qs='';render(true)">ลูกค้า: ${esc(qs)} ✕</button></div>`:''}<div class="list rows">${list.map(card).join('')||`<div class="empty"><b>${t?'ไม่พบงานที่ค้นหา':'ยังไม่มีงานในหมวดนี้'}</b>${t?'ลองพิมพ์คำอื่น':'กดปุ่ม "เพิ่มงานใหม่" ที่หน้าแรกเพื่อเริ่มรับงาน'}</div>`}</div>`;
 }
@@ -914,7 +914,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261111u';
+const BUILD='20261112a';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
