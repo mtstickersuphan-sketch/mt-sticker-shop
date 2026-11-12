@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="../app/icon-v3-180.png">
 <link rel="manifest" href="../app/manifest.webmanifest?v=3">
 <meta name="apple-mobile-web-app-title" content="MT STICKER">
-<title>MT STICKER (ตัวอย่าง 0.7)</title>
+<title>MT STICKER (ตัวอย่าง 0.6.5)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -207,9 +207,8 @@ table.t.docs{min-width:0}
 .kpi.kred span,.kpi.kred b,.kpi.kred small{color:#FF4D5E}
 .tile .tl{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:.2px;margin-bottom:1px}.tile.on .tl{color:#fff}@media(max-width:700px){.tile .tl{font-size:14px}}
 .prbtn2{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px;background:linear-gradient(135deg,#F59E0B,#C2410C);border:0;color:#fff;font-weight:700;font-size:17px;padding:13px 20px;border-radius:14px;box-shadow:0 6px 20px rgba(245,158,11,.3)}.prbtn2:active{transform:scale(.98)}
-.mgrp{border:1px solid var(--line);border-radius:16px;background:var(--panel);margin-bottom:10px;overflow:hidden}.mgrp>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;padding:12px 14px}.mgrp>summary::-webkit-details-marker{display:none}.mgrp>summary b{font-size:17px}.mgrp>summary span{color:var(--mut);font-size:13px}.mgrp>summary em{color:#FFB020;font-style:normal;font-weight:700}.mgrp>summary::after{content:'▾';margin-left:auto;transition:transform .2s}.mgrp[open]>summary::after{transform:rotate(180deg)}.mgrp .list{padding:0 10px 10px}.cleanb{margin-top:14px}
 /* version label */
-:root{--ver:"เวอร์ชัน 0.7 (ตัวอย่าง)"}
+:root{--ver:"เวอร์ชัน 0.6.5 (ตัวอย่าง)"}
 .auth::after,.sidefoot::after,.more::after{content:var(--ver);display:block;text-align:center;font-size:11px;color:var(--mut);opacity:.75;margin-top:6px}
 .more::after{grid-column:1/-1}
 </style>
@@ -444,15 +443,6 @@ function homeV(){
   return `<div class="hero"><span class="dt">วันนี้</span>${wm()}<p>ยินดีต้อนรับสู่ระบบจัดการร้าน${esc(s.name)}</p><button type="button" class="btn prbtn" onclick="openPrices()">${svg('coins',22)}ราคางานสติ๊กเกอร์</button></div><button class="bigadd" onclick="openOrder()">${svg('plus',28)}เพิ่มงานใหม่</button><div class="kpis">${kpis}</div>${ntv}<div class="panel"><h2>เครื่องมือ</h2><div class="nt"><button type="button" class="ntb" onclick="go('calc')"><span class="ico" style="--c:var(--orange)">${svg('coins',18)}</span><span>คิดราคา<small>คิดราคางาน และคำนวณจำนวนชิ้นต่อแผ่น</small></span></button><button type="button" class="ntb" onclick="openKalc()"><span class="ico" style="--c:var(--blue)">${svg('docs',18)}</span><span>เครื่องคิดเลข<small>บวก ลบ คูณ หาร</small></span></button></div></div>`;
 }
 /* ---------- orders ---------- */
-const monOf=o=>String(o.doneAt||o.due||new Date(o.created||Date.now()).toISOString().slice(0,10)).slice(0,7);
-const monTh=k=>{const p=k.split('-');return TMF[+p[1]-1]+' '+(+p[0]+543)};
-window._cm=window._cm||6;
-function doneByMonth(list,all){const g={};list.forEach(o=>(g[monOf(o)]=g[monOf(o)]||[]).push(o));const ks=Object.keys(g).sort().reverse();
-  return ks.map((k,i)=>{const a=g[k].sort((x,y)=>String(y.doneAt||y.due||'').localeCompare(String(x.doneAt||x.due||'')));const tot=a.reduce((t,o)=>t+(+o.price||0),0),owe=a.reduce((t,o)=>t+Math.max(0,rest(o)),0);
-    return `<details class="mgrp"${all||i==0||window._mo&&window._mo[k]?' open':''} ontoggle="(window._mo=window._mo||{})['${k}']=this.open"><summary><b>${monTh(k)}</b><span>${a.length} งาน · ยอดรวม ฿${fmt(tot)}${owe>0?' · <em>ค้าง ฿'+fmt(owe)+'</em>':''}</span></summary><div class="list rows">${a.map(card).join('')}</div></details>`}).join('')}
-function oldDone(){const lim=new Date();lim.setMonth(lim.getMonth()-window._cm);const k=lim.toISOString().slice(0,7);return orders.filter(o=>o.status=='ส่งมอบแล้ว'&&rest(o)<=0&&monOf(o)<k)}
-function cleanBox(){const n=oldDone().length;return `<div class="panel cleanb"><h2>เก็บงานย้อนหลัง</h2><p class="mut">งานที่ส่งมอบแล้วและชำระครบ จัดเก็บแยกเป็นรายเดือนไว้ให้ค้นหา ถ้าอยากเคลียร์งานเก่า เลือกจำนวนเดือนแล้วลบได้ (ลบแล้วกู้คืนไม่ได้ ควรสำรองข้อมูลก่อน)</p><div class="row" style="align-items:flex-end"><label>ลบงานที่เก่ากว่า<select id="cmn" onchange="window._cm=+this.value;render(true)">${[3,6,9,12].map(m=>`<option value="${m}"${window._cm==m?' selected':''}>${m} เดือน</option>`).join('')}</select></label><button class="btn danger" ${n?'':'disabled'} onclick="cleanOld(this)">${n?'ลบงานเก่า '+n+' งาน':'ไม่มีงานที่เข้าเกณฑ์'}</button></div></div>`}
-async function cleanOld(b){if(!b.dataset.s){b.dataset.s=1;b.textContent='กดอีกครั้งเพื่อลบ '+oldDone().length+' งาน ถาวร';return}b.disabled=true;const l=oldDone();try{for(let i=0;i<l.length;i+=400){const bt=db.batch();l.slice(i,i+400).forEach(o=>bt.delete(db.doc('orders/'+o.id)));await bt.commit()}}catch(e){b.disabled=false;b.textContent='ลบไม่สำเร็จ ลองใหม่อีกครั้ง'}}
 function ordersV(){
   const t=qs.trim().toLowerCase(),act=orders.filter(o=>o.status!='ส่งมอบแล้ว');
   const cnt=k=>k=='all'?act.length:orders.filter(o=>o.status==k).length;
@@ -461,7 +451,7 @@ function ordersV(){
   const prC=printers().length?`<div class="chips" style="padding:0"><button class="chipb${window._pf?'':' on'}" onclick="window._pf='';render(true)">ทุกเครื่องพิมพ์ (${base.length})</button>${printers().map(x=>`<button class="chipb${window._pf==x?' on':''}" onclick="window._pf=this.dataset.p;render(true)" data-p="${esc(x)}">${svg('print',16)} ${esc(x)} (${base.filter(o=>o.printer==x).length})</button>`).join('')}</div>`:'';
   const TI=['clip','pen','clock','print','box','truck'],TH=['ลูกค้าสั่งเข้ามา','ทำแบบ / แก้แบบ','รอเข้าคิวผลิต','กำลังผลิต','รอลูกค้ามารับ','จบงานแล้ว'];
   const tiles=[].concat(ST.map((s,k)=>[s,s,TI[k],TH[k],STC[k],k+1]));
-  return `<div class="tiles">${tiles.map(p=>`<button class="tile${filter==p[0]?' on':''}" style="--c:${p[4]}" onclick="filter=filter=='${p[0]}'?'all':'${p[0]}';render(true)"><div class="ico">${svg(p[2],24)}</div><div><span class="tl">${p[1]}</span><b>${cnt(p[0])}</b><small>${p[3]}</small></div></button>`).join('')}</div>${prC}${t?`<div class="chips" style="padding:0"><button class="chipb on" onclick="qs='';render(true)">ลูกค้า: ${esc(qs)} ✕</button></div>`:''}${filter=='ส่งมอบแล้ว'&&list.length?doneByMonth(list,!!t):`<div class="list rows">${list.map(card).join('')||`<div class="empty"><b>${t?'ไม่พบงานที่ค้นหา':'ยังไม่มีงานในหมวดนี้'}</b>${t?'ลองพิมพ์คำอื่น':'กดปุ่ม "เพิ่มงานใหม่" ที่หน้าแรกเพื่อเริ่มรับงาน'}</div>`}</div>`}${filter=='ส่งมอบแล้ว'&&role=='owner'?cleanBox():''}`;
+  return `<div class="tiles">${tiles.map(p=>`<button class="tile${filter==p[0]?' on':''}" style="--c:${p[4]}" onclick="filter=filter=='${p[0]}'?'all':'${p[0]}';render(true)"><div class="ico">${svg(p[2],24)}</div><div><span class="tl">${p[1]}</span><b>${cnt(p[0])}</b><small>${p[3]}</small></div></button>`).join('')}</div>${prC}${t?`<div class="chips" style="padding:0"><button class="chipb on" onclick="qs='';render(true)">ลูกค้า: ${esc(qs)} ✕</button></div>`:''}<div class="list rows">${list.map(card).join('')||`<div class="empty"><b>${t?'ไม่พบงานที่ค้นหา':'ยังไม่มีงานในหมวดนี้'}</b>${t?'ลองพิมพ์คำอื่น':'กดปุ่ม "เพิ่มงานใหม่" ที่หน้าแรกเพื่อเริ่มรับงาน'}</div>`}</div>`;
 }
 function qsIn(el){qs=el.value;clearTimeout(window._qt);window._qt=setTimeout(()=>{const p=el.selectionStart;render(true);const e=$('#qs');if(e){e.focus();e.setSelectionRange(p,p)}},250)}
 function card(o){
@@ -475,7 +465,7 @@ function editOrder(id){const o=orders.find(x=>x.id==id);if(!o)return;
   unitUi('ew','eh','eu');areaUi('e')}
 async function saveEdit(id){const g=i=>$('#'+i).value;if(!g('ec').trim()){$('#ee').textContent='กรอกชื่อลูกค้าก่อน';return}
   try{await db.doc('orders/'+id).update({customer:g('ec').trim(),phone:g('ep').trim(),due:g('edu'),job:g('ej').trim(),mat:g('em'),ptype:g('ept'),printer:g('epn'),unit:uCode(g('eu')),ulabel:uLab('eu'),w:+g('ew')||0,h:+g('eh')||0,qty:+g('eq')||1,price:+g('epr')||0});closeModal()}catch(e){$('#ee').textContent='บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'}}
-function setSt(id,v){if(document.activeElement)document.activeElement.blur();db.doc('orders/'+id).update(v=='ส่งมอบแล้ว'?{status:v,doneAt:today()}:{status:v,doneAt:''}).catch(()=>{})}
+function setSt(id,v){if(document.activeElement)document.activeElement.blur();db.doc('orders/'+id).update({status:v}).catch(()=>{})}
 function del(id,b){if(b.dataset.s){db.doc('orders/'+id).delete().catch(()=>{})}else{b.dataset.s=1;b.textContent='กดอีกครั้งเพื่อลบ'}}
 function openOrder(){
   openModal(`<h2>งานใหม่</h2>${chipsHtml('pickOrd')}<label>ชื่อลูกค้า<input id="fc" list="cdl" autocomplete="off" oninput="autoOrd(this)"></label><div class="row" style="gap:6px 20px"><label class="chk"><input type="checkbox" id="ffav">★ ลูกค้าประจำ</label><label class="chk"><input type="checkbox" id="fcr">เครดิต (วางบิล)</label></div>${dlist()}<div class="row"><label>เบอร์โทร<input id="fp" type="tel" inputmode="tel"></label><label>กำหนดส่ง<input id="fdu" type="date"></label></div><div class="row"><label>LINE<input id="fl" placeholder="ไอดีไลน์ หรือ @..." autocomplete="off"></label><label>Facebook<input id="ff" placeholder="ชื่อ หรือลิงก์โปรไฟล์/เพจ" autocomplete="off"></label><label>TikTok<input id="ft" placeholder="@ชื่อ หรือลิงก์" autocomplete="off"></label></div><div id="items"></div><button type="button" class="btn" onclick="addItem()" style="width:100%;margin:2px 0 8px">+ เพิ่มรายการงาน</button><div class="mut" id="ftot" style="text-align:right;font-weight:600"></div><div class="row"><label>รับเงินมัดจำแล้ว (รวมทุกรายการ)<input id="fd" type="number" inputmode="numeric"></label></div>${payFld('f')}<span id="fe" class="err"></span><div class="row"><button class="btn red" onclick="saveOrder()">บันทึกงาน</button><button class="btn" onclick="closeModal()">ยกเลิก</button></div>`);
@@ -924,7 +914,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261112b';
+const BUILD='20261112c';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
