@@ -655,7 +655,7 @@ function setHead(id,v){const d=docs.find(x=>x.id==id);if(!d)return;d.head=v;db.d
 function setSize(id,v){const d=docs.find(x=>x.id==id);if(!d)return;d.size=v;db.doc('docs/'+id).update({size:v}).catch(()=>{});setModal(docViewHtml(d));setTimeout(fitPaper,0)}
 function docViewHtml(d){
   const nx=d.type=='quote'?['invoice','ทำเป็นใบแจ้งหนี้']:(d.type=='invoice'||d.type=='statement')?['receipt','ทำเป็นใบเสร็จ']:null;
-  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>${DT[d.type][0]} ${esc(d.no)}</h2><button class="icb" onclick="closeModal()" aria-label="ปิด">✕</button></div><div class="paperwrap">${paper(d)}</div><p class="mut">เอกสารนี้ไม่ใช่ใบกำกับภาษี ดาวน์โหลดเป็น PDF หรือบันทึกเป็นรูป JPG เพื่อส่งให้ลูกค้าได้</p><span id="dv" class="mut"></span><div class="row"><button class="btn red" onclick="dlDoc('${d.id}')">ดาวน์โหลด PDF</button><button class="btn" onclick="dlImg('${d.id}')">บันทึกเป็นรูป JPG</button><button class="btn" onclick="editDoc('${d.id}')">แก้ไข</button>${nx?`<button class="btn" onclick="convDoc('${d.id}','${nx[0]}')">${nx[1]}</button>`:''}${role=='owner'?`<button class="btn danger" onclick="delDoc('${d.id}',this)">ลบเอกสาร</button>`:''}</div>`;
+  return `<div class="row" style="justify-content:space-between;align-items:center"><h2>${DT[d.type][0]} ${esc(d.no)}</h2><button class="icb" onclick="closeModal()" aria-label="ปิด">✕</button></div><div class="paperwrap">${paper(d)}</div><p class="mut">เอกสารนี้ไม่ใช่ใบกำกับภาษี ดาวน์โหลดเป็น PDF หรือบันทึกเป็นรูป JPG เพื่อส่งให้ลูกค้าได้</p><span id="dv" class="mut"></span><div class="row"><button class="btn red" onclick="dlDoc('${d.id}')">ดาวน์โหลด PDF</button><button class="btn" onclick="dlImg('${d.id}')">บันทึกเป็นรูป JPG</button>${nx?`<button class="btn" onclick="convDoc('${d.id}','${nx[0]}')">${nx[1]}</button>`:''}${role=='owner'?`<button class="btn danger" onclick="delDoc('${d.id}',this)">ลบเอกสาร</button>`:''}<button class="btn" onclick="editDoc('${d.id}')">แก้ไข</button></div>`;
 }
 async function pickSave(name,blob,mime){
   if(window.showSaveFilePicker){try{const ext='.'+name.split('.').pop(),h=await window.showSaveFilePicker({suggestedName:name,types:[{description:ext.slice(1).toUpperCase(),accept:{[mime]:[ext]}}]});const w=await h.createWritable();await w.write(blob);await w.close();return}catch(e){if(e&&e.name=='AbortError'){const x=new Error('c');x.code='declined';throw x}}}
@@ -917,7 +917,7 @@ async function rmM(b){
   const row=b.closest('.mrow'),next=row.nextSibling;row.remove();
   if(!(await saveSet(null))){$('#ml').insertBefore(row,next);b.classList.remove('arm')}}
 function moreV(){const o=role=='owner';return `<div class="more">${[['customers','ลูกค้า','users'],['credit','เครดิต วางบิล','coins']].concat(role=='owner'?[]:[['acct','บัญชีของฉัน','users']]).concat([['calc','คิดราคา','calc']]).concat(o?[['users','พนักงานและบัญชี','users'],['set','ตั้งค่า','set']]:[]).map(n=>`<button class="btn" onclick="go('${n[0]}')">${svg(n[2],22)}${n[1]}</button>`).join('')}<button class="btn" onclick="openKalc()">${svg('calc',22)}เครื่องคิดเลข</button><button class="btn danger" onclick="logout()">${svg('out',22)}ออกจากระบบ</button></div>`}
-const BUILD='20261120a';
+const BUILD='20261120b';
 (async()=>{try{const t=await fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'}).then(r=>r.text());const m=t.match(/const BUILD='([^']+)'/);if(m&&m[1]!=BUILD&&sessionStorage.getItem('bld')!=m[1]){sessionStorage.setItem('bld',m[1]);location.reload()}}catch(e){}})();
 init();
 </script>
